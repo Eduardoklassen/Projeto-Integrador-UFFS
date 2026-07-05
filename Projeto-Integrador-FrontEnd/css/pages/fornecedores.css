@@ -1,0 +1,16 @@
+/* ============================================================
+   FORNECEDORES.CSS — Específico da página Fornecedores
+   ============================================================ */
+
+.fornecedores__sub { font-size: 0.8rem; color: var(--cor-texto-claro); }
+
+/* Tags de materiais fornecidos */
+.tag {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto-suave);
+  margin: 1px;
+}

@@ -1,0 +1,46 @@
+/* ============================================================
+   ANALISE.CSS — Específico da página Análise
+   ============================================================ */
+
+/* Filtros de período na topbar (injetados via JS) */
+.filtros-periodo { display: flex; gap: 0.5rem; }
+
+.filtro-btn {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--cor-borda);
+  background-color: var(--cor-superficie);
+  border-radius: var(--raio-sm);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: var(--peso-semi);
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+}
+
+.filtro-btn--ativo {
+  background-color: var(--cor-primaria);
+  color: #fff;
+  border-color: var(--cor-primaria);
+}
+
+/* Grid de gráficos */
+.analise__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--esp-lg);
+}
+
+@media (max-width: 1100px) {
+  .analise__grid { grid-template-columns: 1fr; }
+}
+
+.analise__full { grid-column: 1 / -1; }
+
+.grafico-wrap { position: relative; height: 280px; }
+
+.analise__aviso {
+  font-size: 0.78rem;
+  color: var(--cor-texto-claro);
+  margin-top: 0.75rem;
+  text-align: center;
+}

@@ -1,0 +1,77 @@
+/* 
+   MODAL.CSS — Janela de detalhe/sobreposição (bloco BEM "modal")
+  
+   Usado para exibir detalhes (pedido com itens, compra com
+   materiais) sem sair da tela de listagem.
+*/
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--esp-md);
+  z-index: 100;
+}
+
+.modal--aberto { display: flex; }
+
+.modal__caixa {
+  background-color: var(--cor-superficie);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra-lg);
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--esp-lg);
+}
+
+.modal__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--esp-md);
+  padding-bottom: var(--esp-sm);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.modal__titulo {
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-negrito);
+}
+
+.modal__fechar {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--cor-texto-suave);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--raio-sm);
+}
+.modal__fechar:hover { background-color: var(--cor-fundo); color: var(--cor-texto); }
+
+.modal__secao { margin-bottom: var(--esp-md); }
+
+.modal__secao-titulo {
+  font-size: 0.8rem;
+  font-weight: var(--peso-negrito);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cor-texto-claro);
+  margin-bottom: var(--esp-xs);
+}
+
+/* Linhas de informação (valor) */
+.modal__info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--esp-sm);
+}
+.modal__info-item { font-size: 0.9rem; }
+.modal__info-rotulo { color: var(--cor-texto-suave); font-size: 0.8rem; }
+.modal__info-valor { font-weight: var(--peso-semi); }

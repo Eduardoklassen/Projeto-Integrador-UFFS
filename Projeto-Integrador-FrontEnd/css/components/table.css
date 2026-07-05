@@ -1,0 +1,74 @@
+/* 
+   TABLE.CSS — Componente Tabela e Badges (bloco BEM "tabela")
+ 
+   Tabela de dados usada em movimentações, produtos, financeiro,
+   etc.  
+*/
+
+.tabela-scroll { overflow-x: auto; }
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.tabela__th {
+  text-align: left;
+  padding: 0.75rem;
+  color: var(--cor-texto-claro);
+  font-weight: var(--peso-negrito);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.tabela__td {
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.tabela__linha:last-child .tabela__td { border-bottom: none; }
+
+.tabela__nome { font-weight: var(--peso-semi); }
+.tabela__sub  { font-size: 0.8rem; color: var(--cor-texto-claro); }
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--raio-cheio);
+  font-size: 0.78rem;
+  font-weight: var(--peso-semi);
+}
+
+.badge--sucesso  { background-color: var(--cor-sucesso-fundo); color: var(--cor-sucesso); }
+.badge--erro     { background-color: var(--cor-erro-fundo);    color: var(--cor-primaria); }
+.badge--aviso    { background-color: var(--cor-aviso-fundo);   color: var(--cor-aviso); }
+.badge--info     { background-color: var(--cor-info-fundo);    color: var(--cor-info); }
+
+/* Ícones de ação na linha */
+.tabela__acoes {
+  display: inline-flex;
+  gap: 0.6rem;
+  color: var(--cor-texto-claro);
+}
+.tabela__acoes button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: 0.95rem;
+}
+.tabela__acoes button:hover { color: var(--cor-texto); }
+
+/* Cabeçalhos ordenáveis: indicam que são clicáveis. */
+.tabela__th--ordenavel {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.tabela__th--ordenavel:hover {
+  color: var(--cor-primaria);
+}

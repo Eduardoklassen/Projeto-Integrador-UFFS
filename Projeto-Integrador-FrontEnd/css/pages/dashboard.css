@@ -1,0 +1,21 @@
+/* ============================================================
+   DASHBOARD.CSS — Estilos específicos da página Dashboard
+   ------------------------------------------------------------
+   Só o que é exclusivo desta tela. Sidebar, topbar, kpi, card
+   e tabela vêm dos componentes compartilhados.
+   ============================================================ */
+
+/* Grid de dois cards lado a lado (alertas + atividade) */
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--esp-lg);
+}
+
+@media (max-width: 1100px) {
+  .dashboard__grid { grid-template-columns: 1fr; }
+}
+
+/* Cores de quantidade na tabela */
+.qtd-pos { color: var(--cor-sucesso); font-weight: var(--peso-semi); }
+.qtd-neg { color: var(--cor-primaria); font-weight: var(--peso-semi); }

@@ -1,0 +1,46 @@
+/* 
+   TOPBAR.CSS — Componente Barra Superior 
+*/
+
+.topbar {
+  background-color: var(--cor-superficie);
+  border-bottom: 1px solid var(--cor-borda);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  padding: 0 var(--esp-lg);
+}
+
+.topbar__titulo {
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-negrito);
+}
+
+.topbar__acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-md);
+}
+
+.topbar__busca {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  background-color: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-cheio);
+  padding: 0.55rem 1rem;
+  width: 300px;
+  max-width: 100%;
+  color: var(--cor-texto-claro);
+}
+
+.topbar__busca-input {
+  border: none;
+  background: none;
+  outline: none;
+  font: inherit;
+  color: var(--cor-texto);
+  width: 100%;
+}

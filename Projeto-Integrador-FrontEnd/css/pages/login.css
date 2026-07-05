@@ -1,0 +1,67 @@
+/* ============================================================
+   LOGIN.CSS — Estilos da PÁGINA de login (bloco BEM "login")
+   ------------------------------------------------------------
+   Responsabilidade: APENAS layout/posicionamento desta tela.
+   A aparência da caixa vem do componente .card (card.css).
+   Abordagem mobile-first (handout CSS, seção 11.2): estilos
+   base para telas pequenas; @media min-width adiciona ajustes.
+   ============================================================ */
+
+/* Bloco login: ocupa a tela toda e centraliza o conteúdo.
+   Centralização com Flexbox — handout CSS, seção 9.1 (Código 26). */
+.login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--esp-md);
+  background: linear-gradient(135deg, var(--cor-secundaria) 0%, var(--cor-primaria-escura) 100%);
+}
+
+/* Elemento que posiciona/limita o card NESTA tela.
+   Note: só largura — nada de fundo/sombra (isso é do .card). */
+.login__caixa {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Alerta global de erro/sucesso (específico desta tela) */
+.login__alerta {
+  display: none;                 /* oculto por padrão */
+  padding: var(--esp-sm) var(--esp-md);
+  border-radius: var(--raio-sm);
+  font-size: var(--texto-sm);
+  margin-bottom: var(--esp-md);
+}
+
+.login__alerta--visivel { display: block; }
+
+.login__alerta--erro {
+  background-color: #fdecec;
+  color: var(--cor-primaria-escura);
+  border: 1px solid #f5c6c6;
+}
+
+.login__alerta--sucesso {
+  background-color: #eaf7ee;
+  color: var(--cor-sucesso);
+  border: 1px solid #bfe6c9;
+}
+
+/* Link "esqueci a senha" (específico desta tela) */
+.login__esqueci {
+  display: block;
+  margin-top: var(--esp-md);
+  text-align: center;
+  font-size: var(--texto-sm);
+  color: var(--cor-primaria);
+}
+
+.login__esqueci:hover { text-decoration: underline; }
+
+/* ---------- Ajustes para telas maiores (mobile-first) ----------
+   Em telas >= 480px, o card ganha um respiro maior interno.
+   Mantém a base enxuta para mobile (handout CSS, seção 11.2). */
+@media (min-width: 480px) {
+  .login { padding: var(--esp-lg); }
+}

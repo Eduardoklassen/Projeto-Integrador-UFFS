@@ -1,0 +1,129 @@
+/* 
+   FORM.CSS — Formulários de cadastro 
+   
+   Campos usados nas telas internas (novo produto, lançamento,
+   movimentação)
+*/
+
+/* Grids de campos (responsivos) */
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--esp-md); }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--esp-md); }
+
+@media (max-width: 900px) {
+  .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+}
+
+.form__campo { margin-bottom: var(--esp-md); }
+
+.form__label {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: var(--peso-semi);
+  margin-bottom: var(--esp-xs);
+}
+
+.form__obrigatorio { color: var(--cor-primaria); }
+
+.form__input,
+.form__select,
+.form__textarea {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.9rem;
+  color: var(--cor-texto);
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  font-family: inherit;
+}
+
+.form__input:focus,
+.form__select:focus,
+.form__textarea:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(158, 27, 27, 0.12);
+}
+
+.form__textarea { resize: vertical; min-height: 80px; }
+
+/* Rodapé do formulário (botões) */
+.form__acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: var(--esp-md);
+  padding-top: var(--esp-md);
+  border-top: 1px solid var(--cor-borda);
+}
+
+/* Anexo de arquivo (boletos) */
+.form__anexo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border: 1.5px dashed var(--cor-borda);
+  border-radius: var(--raio-sm);
+  cursor: pointer;
+  color: var(--cor-texto-suave);
+  font-size: 0.88rem;
+}
+
+.form__anexo:hover {
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+}
+
+/* 
+   FORM-ITENS — linhas dinâmicas de itens (pedido/compra)
+*/
+
+.form-itens__titulo {
+  font-size: 0.8rem;
+  font-weight: var(--peso-negrito);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cor-texto-claro);
+  margin: var(--esp-md) 0 var(--esp-xs);
+}
+
+/* Grid: item | qtd | valor | subtotal | remover */
+.form-itens__linha {
+  display: grid;
+  grid-template-columns: 2fr 70px 110px 90px 32px;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.form-itens__linha--cab { margin-bottom: 0.25rem; }
+
+.form-itens__cab {
+  font-size: 0.72rem;
+  font-weight: var(--peso-semi);
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.fi-subtotal { font-size: 0.85rem; font-weight: var(--peso-semi); }
+
+.form-itens__remover {
+  background: none;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  cursor: pointer;
+  color: var(--cor-texto-suave);
+  padding: 0.3rem 0;
+}
+.form-itens__remover:hover { color: var(--cor-erro); border-color: var(--cor-erro); }
+
+.form-itens__total {
+  text-align: right;
+  margin-top: var(--esp-sm);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 700px) {
+  .form-itens__linha { grid-template-columns: 1fr 60px 90px 70px 28px; }
+}

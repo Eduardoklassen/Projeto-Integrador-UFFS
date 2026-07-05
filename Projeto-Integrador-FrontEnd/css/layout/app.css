@@ -1,0 +1,39 @@
+/* ============================================================
+   APP.CSS — Layout geral da aplicação (bloco BEM "app")
+   ------------------------------------------------------------
+   Esqueleto de todas as telas internas: sidebar fixa à
+   esquerda, topbar no topo, conteúdo no miolo.
+   Grid bidimensional — handout CSS, seção 10 (grid-template-areas).
+   ============================================================ */
+
+.app {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: 72px 1fr;
+  grid-template-areas:
+    "sidebar topbar"
+    "sidebar main";
+  min-height: 100vh;
+}
+
+.app__sidebar { grid-area: sidebar; }
+.app__topbar  { grid-area: topbar; }
+.app__main {
+  grid-area: main;
+  padding: var(--esp-lg);
+  overflow-y: auto;
+}
+
+/* ---------- Responsivo (mobile-first invertido p/ painel) ----------
+   Em telas estreitas a sidebar recolhe. Implementação completa do
+   menu mobile (botão hambúrguer) fica para uma etapa futura;
+   por ora, garante que o conteúdo não quebre. */
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "topbar"
+      "main";
+  }
+  .app__sidebar { display: none; }
+}

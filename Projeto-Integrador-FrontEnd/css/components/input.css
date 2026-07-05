@@ -1,0 +1,73 @@
+/* 
+   INPUT.CSS — Componente Campo de Formulário
+   
+   Reutilizável em todos os formulários do sistema.
+*/
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-xs);
+  margin-bottom: var(--esp-md);
+}
+
+.campo__label {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto);
+}
+
+.campo__controle {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.campo__input {
+  width: 100%;
+  padding: 0.75rem var(--esp-md);
+  font-size: var(--texto-md);
+  color: var(--cor-texto);
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+.campo__input::placeholder {
+  color: var(--cor-texto-claro);
+}
+
+.campo__input:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(158, 27, 27, 0.15);
+}
+
+/* Botão de mostrar/ocultar senha dentro do campo */
+.campo__toggle {
+  position: absolute;
+  right: var(--esp-md);
+  display: flex;
+  align-items: center;
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-sm);
+}
+
+.campo__toggle:hover {
+  color: var(--cor-texto);
+}
+
+.campo--erro .campo__input {
+  border-color: var(--cor-erro);
+}
+
+.campo--erro .campo__input:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.campo__mensagem-erro {
+  font-size: var(--texto-xs);
+  color: var(--cor-erro);
+  min-height: 1rem;
+}

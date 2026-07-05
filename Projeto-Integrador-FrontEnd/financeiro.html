@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Controle financeiro (caixas, receitas e despesas) da Nino Klassen Artefatos de Concreto.">
+  <title>Financeiro — Nino Klassen Artefatos</title>
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="stylesheet" href="css/base/reset.css">
+  <link rel="stylesheet" href="css/base/variables.css">
+  <link rel="stylesheet" href="css/base/global.css">
+  <link rel="stylesheet" href="css/layout/app.css">
+  <link rel="stylesheet" href="css/components/sidebar.css">
+  <link rel="stylesheet" href="css/components/topbar.css">
+  <link rel="stylesheet" href="css/components/card.css">
+  <link rel="stylesheet" href="css/components/button.css">
+  <link rel="stylesheet" href="css/components/toolbar.css">
+  <link rel="stylesheet" href="css/components/table.css">
+  <link rel="stylesheet" href="css/components/modal.css">
+  <link rel="stylesheet" href="css/components/form.css">
+  <link rel="stylesheet" href="css/pages/financeiro.css">
+  <link rel="stylesheet" href="css/base/responsive.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="app__sidebar"></aside>
+    <header class="app__topbar"></header>
+    <main class="app__main">
+      <section class="card">
+        <div class="card__cabecalho-flex">
+          <div class="card__cabecalho-ico">R$</div>
+          <h1 class="card__titulo">Financeiro</h1>
+        </div>
+
+        <div class="toolbar" style="margin-bottom: 0;">
+          <div></div>
+          <div class="toolbar__acoes">
+            <button class="btn btn--primario btn--auto" id="btn-novo-fin">＋ Novo caixa</button>
+          </div>
+        </div>
+
+        <div class="abas">
+          <button type="button" class="aba aba--ativa" data-aba="caixas">Caixas</button>
+          <button type="button" class="aba" data-aba="receitas">Receitas</button>
+          <button type="button" class="aba" data-aba="despesas">Despesas</button>
+        </div>
+
+        <div class="tabela-scroll">
+          <table class="tabela">
+            <thead id="thead-fin"></thead>
+            <tbody id="tabela-fin"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="js/config/api.config.js"></script>
+  <script src="js/core/storage.js"></script>
+  <script src="js/core/http.js"></script>
+  <script src="js/core/inatividade.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/layout.js"></script>
+  <script src="js/utils/dom.js"></script>
+  <script src="js/core/modal.js"></script>
+  <script src="js/core/form-modal.js"></script>
+  <script src="js/utils/validators.js"></script>
+  <script src="js/modules/financeiro/financeiro.js"></script>
+</body>
+</html>

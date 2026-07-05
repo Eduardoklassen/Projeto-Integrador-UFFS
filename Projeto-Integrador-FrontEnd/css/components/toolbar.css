@@ -1,0 +1,94 @@
+/* 
+   TOOLBAR.CSS — Barra de busca e ações 
+
+   Usada no topo das telas de listagem (produtos, fornecedores,
+   financeiro)
+*/
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  margin-bottom: var(--esp-md);
+  flex-wrap: wrap;
+}
+
+.toolbar__busca {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  padding: 0.6rem 0.9rem;
+  flex: 1;
+  min-width: 200px;
+  max-width: 360px;
+  color: var(--cor-texto-claro);
+}
+
+.toolbar__busca-input {
+  border: none;
+  outline: none;
+  font: inherit;
+  color: var(--cor-texto);
+  width: 100%;
+  background: none;
+}
+
+.toolbar__acoes {
+  display: flex;
+  gap: 0.6rem;
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  box-shadow: var(--sombra-md);
+  min-width: 170px;
+  overflow: hidden;
+  display: none;
+  z-index: 10;
+}
+
+.dropdown--aberto { display: block; }
+
+.dropdown__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.88rem;
+  color: var(--cor-texto);
+  cursor: pointer;
+  text-align: left;
+}
+
+.dropdown__item:hover { background-color: var(--cor-fundo); }
+
+
+.toolbar__filtro {
+  padding: 0.6rem 0.9rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: var(--cor-texto);
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  cursor: pointer;
+}
+.toolbar__filtro:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(158, 27, 27, 0.12);
+}

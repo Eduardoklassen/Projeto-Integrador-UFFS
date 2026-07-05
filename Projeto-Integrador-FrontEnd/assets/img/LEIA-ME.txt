@@ -1,0 +1,3 @@
+Coloque aqui as imagens do sistema:
+- favicon.png  (ícone da aba do navegador — referenciado no <head> das páginas)
+- logo-nino-klassen.png  (logo da empresa, se quiser usar no lugar do "NK")

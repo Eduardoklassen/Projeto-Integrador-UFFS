@@ -1,0 +1,107 @@
+/* 
+   SIDEBAR.CSS — Componente Barra Lateral 
+
+   Navegação principal do sistema. Reutilizado em todas as
+   telas internas via layout.js.
+*/
+
+.sidebar {
+  background-color: var(--cor-superficie);
+  border-right: 1px solid var(--cor-borda);
+  display: flex;
+  flex-direction: column;
+  padding: var(--esp-lg) 0;
+}
+
+.sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  padding: 0 var(--esp-lg) var(--esp-lg);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.sidebar__logo-icone {
+  width: 42px;
+  height: 42px;
+  background-color: var(--cor-primaria);
+  border-radius: var(--raio-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: var(--peso-negrito);
+  letter-spacing: 0.03em;
+}
+
+.sidebar__logo-texto {
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-negrito);
+  color: var(--cor-secundaria);
+}
+.sidebar__logo-texto span { color: var(--cor-primaria); }
+
+.sidebar__grupo {
+  padding: var(--esp-lg) var(--esp-md) var(--esp-xs);
+  font-size: 0.7rem;
+  font-weight: var(--peso-negrito);
+  letter-spacing: 0.08em;
+  color: var(--cor-texto-claro);
+}
+
+.sidebar__nav { padding: 0 var(--esp-sm); }
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--raio-sm);
+  color: var(--cor-texto-suave);
+  font-size: 0.92rem;
+  font-weight: var(--peso-medio);
+  margin-bottom: 0.15rem;
+  transition: background-color var(--transicao), color var(--transicao);
+}
+
+.sidebar__link:hover {
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+}
+
+.sidebar__link--ativo {
+  background-color: var(--cor-primaria-fundo);
+  color: var(--cor-primaria);
+  font-weight: var(--peso-semi);
+}
+
+.sidebar__ico {
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sidebar__rodape {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: var(--esp-md) var(--esp-lg) 0;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.sidebar__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--raio-cheio);
+  background-color: var(--cor-primaria);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--peso-negrito);
+  flex-shrink: 0;
+}
+
+.sidebar__usuario-nome { font-size: 0.9rem; font-weight: var(--peso-semi); }
+.sidebar__usuario-papel { font-size: 0.78rem; color: var(--cor-texto-suave); }

@@ -1,0 +1,11 @@
+/* ============================================================
+   PRODUTOS.CSS — Específico da página Produtos
+   ------------------------------------------------------------
+   Quase tudo vem de componentes (toolbar, table, card, button).
+   Aqui só o que é exclusivo desta tela.
+   ============================================================ */
+
+.produtos__codigo {
+  font-size: 0.8rem;
+  color: var(--cor-texto-claro);
+}

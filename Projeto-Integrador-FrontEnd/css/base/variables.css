@@ -1,0 +1,71 @@
+/* 
+   VARIABLES.CSS — Design Tokens
+ 
+   Centraliza TODAS as cores, fontes, espaçamentos e tamanhos
+   do sistema. Para mudar o tema inteiro, altere apenas aqui.
+*/
+
+:root {
+  
+  --cor-primaria:        #9e1b1b;   
+  --cor-primaria-escura: #7d1414;   
+  --cor-primaria-clara:  #c0392b;
+  --cor-primaria-fundo:  #fdecec;   
+  --cor-secundaria:      #2d2d2d;   
+
+  --cor-sucesso: #16a34a;
+  --cor-erro:    #dc2626;
+  --cor-aviso:   #d97706;
+  --cor-info:    #2563eb;
+
+  --cor-sucesso-fundo: #eaf7ee;
+  --cor-erro-fundo:    #fdecec;
+  --cor-aviso-fundo:   #fef3e2;
+  --cor-info-fundo:    #eaf0fd;
+
+  
+  --cor-fundo:        #f1f5f9;   
+  --cor-superficie:   #ffffff;   
+  --cor-borda:        #e2e8f0;
+  --cor-texto:        #1e293b;   
+  --cor-texto-suave:  #64748b;   
+  --cor-texto-claro:  #94a3b8;   
+
+ 
+  --fonte-principal: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+
+  --texto-xs:  0.75rem;   
+  --texto-sm:  0.875rem;  
+  --texto-md:  1rem;      
+  --texto-lg:  1.125rem;  
+  --texto-xl:  1.5rem;    
+  --texto-2xl: 2rem;      
+
+  --peso-normal:  400;
+  --peso-medio:   500;
+  --peso-semi:    600;
+  --peso-negrito: 700;
+
+ 
+  --esp-xs:  0.25rem;   
+  --esp-sm:  0.5rem;   
+  --esp-md:  1rem;      
+  --esp-lg:  1.5rem;    
+  --esp-xl:  2rem;      
+  --esp-2xl: 3rem;      
+
+  --raio-sm:  6px;
+  --raio-md:  10px;
+  --raio-lg:  16px;
+  --raio-cheio: 9999px;
+
+  
+  --sombra-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --sombra-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --sombra-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+
+
+  --transicao: 0.2s ease;
+
+  --largura-max-conteudo: 1200px;
+}

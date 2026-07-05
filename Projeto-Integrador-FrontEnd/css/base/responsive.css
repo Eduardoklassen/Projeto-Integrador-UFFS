@@ -1,0 +1,192 @@
+/* 
+   RESPONSIVE.CSS — Adaptação para celular e tablet
+   
+   CSS existente (que continua sendo o comportamento desktop).
+   Breakpoints:
+    Desktop:  1024px  (layout original, intocado)
+    Tablet:   601–1024px
+    Celular:  600px
+
+*/
+
+  
+.topbar__esquerda {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-md);
+  min-width: 0; /* deixa o título truncar se faltar espaço */
+}
+
+.topbar__menu-btn {
+  display: none; /* escondido no desktop */
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--cor-texto);
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--raio-sm);
+}
+.topbar__menu-btn:hover { background-color: var(--cor-fundo); }
+
+/* Overlay escuro atrás do menu aberto (mobile). */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  z-index: 90;
+  display: none;
+}
+.sidebar-overlay--visivel { display: block; }
+
+/* 
+   TABLET E CELULAR  (1024px)
+*/
+@media (max-width: 1024px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "topbar"
+      "main";
+  }
+
+  /* Mostra o botão de menu. */
+  .topbar__menu-btn { display: inline-flex; align-items: center; }
+
+  /* Sidebar como painel deslizante fora da tela por padrão. */
+  .app__sidebar {
+    display: flex;               /* volta a existir (o base escondia) */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    max-width: 82vw;
+    height: 100vh;
+    z-index: 95;
+    transform: translateX(-100%); /* escondida à esquerda */
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+    box-shadow: var(--sombra-lg);
+  }
+
+  /* Quando aberta pelo botão, desliza para dentro. */
+  .app__sidebar.sidebar--aberta { transform: translateX(0); }
+
+  /* Topbar fica grudada no topo ao rolar (mais usável no mobile). */
+  .app__topbar {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    min-height: 64px;
+  }
+}
+
+/* 
+   TABLET  (601–1024px) — ajustes de respiro
+*/
+@media (min-width: 601px) and (max-width: 1024px) {
+  .app__main { padding: var(--esp-md); }
+
+  /* KPIs e cards do dashboard/análise: de 4 para 2 colunas. */
+  .kpis,
+  .dashboard__cards,
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* 
+   CELULAR  (600px)
+*/
+@media (max-width: 600px) {
+  .app__main { padding: var(--esp-sm); }
+
+  /* ---- Título da topbar menor e sem estourar ---- */
+  .topbar__titulo {
+    font-size: 1.05rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .app__topbar { padding: 0 var(--esp-md); }
+
+  /* ---- Toolbar: tudo empilhado e largura cheia ---- */
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .toolbar__busca {
+    max-width: none;
+    width: 100%;
+  }
+  .toolbar__acoes {
+    flex-direction: column;
+    width: 100%;
+  }
+  .toolbar__acoes .btn,
+  .toolbar__filtro {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ---- KPIs e cards: 1 coluna ---- */
+  .kpis,
+  .dashboard__cards,
+  .cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ---- Cards: menos padding ---- */
+  .card { padding: var(--esp-md); }
+
+  .tabela-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* rolagem suave no iOS */
+    margin: 0 calc(-1 * var(--esp-sm)); /* aproveita a largura toda */
+    padding: 0 var(--esp-sm);
+  }
+  .tabela {
+    min-width: 640px; /* garante que as colunas não se espremam */
+  }
+
+  /* Ações um pouco maiores para tocar melhor. */
+  .tabela__acoes { gap: 1rem; }
+  .tabela__acoes button { font-size: 1.1rem; }
+
+  /* ---- Modais ocupam quase a tela toda ---- */
+  .modal { padding: var(--esp-sm); }
+  .modal__caixa {
+    padding: var(--esp-md);
+    max-height: 94vh;
+  }
+  .modal__info { grid-template-columns: 1fr; }
+
+  /* ---- Formulário do modal: campos em coluna cheia ---- */
+  .form-modal__campos,
+  .form__grupo { grid-template-columns: 1fr !important; }
+
+  /* Botões de ação do form ocupam a largura. */
+  .form-modal__acoes,
+  .form__acoes {
+    flex-direction: column-reverse;
+    gap: var(--esp-sm);
+  }
+  .form-modal__acoes .btn,
+  .form__acoes .btn { width: 100%; }
+
+  /* ---- Itens dinâmicos (pedido/compra) empilham ---- */
+  .form-itens__linha {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+  .form-itens__linha--cab { display: none; } /* cabeçalho não cabe; some */
+}
+
+/*
+   Telas muito pequenas (380px): aperta um pouco mais.
+*/
+@media (max-width: 380px) {
+  .sidebar__logo-texto { font-size: 1rem; }
+  .tabela__td { font-size: 0.85rem; }
+}

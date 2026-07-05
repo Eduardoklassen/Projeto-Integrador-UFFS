@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Análise gráfica de estoque e movimentações da Nino Klassen Artefatos de Concreto.">
+  <title>Análise — Nino Klassen Artefatos</title>
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+
+  <link rel="stylesheet" href="css/base/reset.css">
+  <link rel="stylesheet" href="css/base/variables.css">
+  <link rel="stylesheet" href="css/base/global.css">
+  <link rel="stylesheet" href="css/layout/app.css">
+  <link rel="stylesheet" href="css/components/sidebar.css">
+  <link rel="stylesheet" href="css/components/topbar.css">
+  <link rel="stylesheet" href="css/components/card.css">
+  <link rel="stylesheet" href="css/components/kpi.css">
+  <link rel="stylesheet" href="css/pages/analise.css">
+  <link rel="stylesheet" href="css/base/responsive.css">
+</head>
+<body>
+
+  <div class="app">
+    <aside class="app__sidebar"></aside>
+    <header class="app__topbar"></header>
+
+    <main class="app__main">
+
+      <div class="kpis" id="kpis"></div>
+
+      <!-- Entradas x Saídas (largura total) -->
+      <section class="card analise__full">
+        <div class="card__cabecalho-flex">
+          <div class="card__cabecalho-ico">⇅</div>
+          <h2 class="card__titulo">Entradas × Saídas no Período</h2>
+        </div>
+        <div class="grafico-wrap"><canvas id="graf-fluxo"></canvas></div>
+        <p class="analise__aviso">Dados reais — agregados de pedidos, compras, produtos e financeiro da API.</p>
+      </section>
+
+      <div class="analise__grid">
+        <section class="card">
+          <div class="card__cabecalho-flex">
+            <div class="card__cabecalho-ico">◫</div>
+            <h2 class="card__titulo">Estoque por Produto</h2>
+          </div>
+          <div class="grafico-wrap"><canvas id="graf-categoria"></canvas></div>
+        </section>
+
+        <section class="card">
+          <div class="card__cabecalho-flex">
+            <div class="card__cabecalho-ico">▰</div>
+            <h2 class="card__titulo">Pedidos por Status</h2>
+          </div>
+          <div class="grafico-wrap"><canvas id="graf-top"></canvas></div>
+        </section>
+
+        <section class="card">
+          <div class="card__cabecalho-flex">
+            <div class="card__cabecalho-ico">R$</div>
+            <h2 class="card__titulo">Pagamentos por Forma</h2>
+          </div>
+          <div class="grafico-wrap"><canvas id="graf-forma"></canvas></div>
+        </section>
+
+        <section class="card">
+          <div class="card__cabecalho-flex">
+            <div class="card__cabecalho-ico">R$</div>
+            <h2 class="card__titulo">Receitas × Despesas</h2>
+          </div>
+          <div class="grafico-wrap"><canvas id="graf-valor"></canvas></div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Chart.js via CDN (handout CSS, seção 12).
+       Obs.: v4 não publica SRI oficial; para rigor de integridade,
+       fixar v3.9.1 com hash ou servir local em produção. -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <script src="js/config/api.config.js"></script>
+  <script src="js/core/storage.js"></script>
+  <script src="js/core/http.js"></script>
+  <script src="js/core/inatividade.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/layout.js"></script>
+  <script src="js/utils/dom.js"></script>
+  <script src="js/modules/analise/analise.js"></script>
+
+</body>
+</html>

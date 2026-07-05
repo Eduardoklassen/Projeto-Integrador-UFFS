@@ -1,0 +1,38 @@
+/* ============================================================
+   FINANCEIRO.CSS — Específico da página Financeiro
+   ============================================================ */
+
+/* Abas A Pagar / A Receber */
+.abas {
+  display: inline-flex;
+  background-color: var(--cor-fundo);
+  border-radius: var(--raio-sm);
+  padding: 4px;
+  margin-bottom: var(--esp-md);
+}
+
+.aba {
+  padding: 0.55rem 1.1rem;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: var(--peso-semi);
+  font-size: 0.88rem;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+}
+
+.aba--ativa {
+  background-color: var(--cor-superficie);
+  color: var(--cor-primaria);
+  box-shadow: var(--sombra-md);
+}
+
+/* Tipo de lançamento na tabela */
+.tipo-pagar   { color: var(--cor-primaria); font-weight: var(--peso-semi); }
+.tipo-receber { color: var(--cor-sucesso); font-weight: var(--peso-semi); }
+
+.anexo-link { color: var(--cor-info); cursor: pointer; }
+.anexo-link:hover { text-decoration: underline; }
+.sem-anexo { color: var(--cor-texto-claro); }

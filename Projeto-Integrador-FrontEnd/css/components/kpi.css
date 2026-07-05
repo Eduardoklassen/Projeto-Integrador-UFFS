@@ -1,0 +1,44 @@
+/* 
+   KPI.CSS — Componente Card de Indicador
+
+   Cartões de resumo no topo do dashboard e da análise.
+   Usar dentro de .kpis (grid responsivo).
+*/
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--esp-md);
+  margin-bottom: var(--esp-lg);
+}
+
+.kpi {
+  background-color: var(--cor-superficie);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra-md);
+  padding: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-md);
+}
+
+.kpi__ico {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: var(--peso-negrito);
+  flex-shrink: 0;
+}
+
+/* Variações de cor do ícone */
+.kpi__ico--vinho   { background-color: var(--cor-primaria-fundo); color: var(--cor-primaria); }
+.kpi__ico--verde   { background-color: var(--cor-sucesso-fundo);  color: var(--cor-sucesso); }
+.kpi__ico--azul    { background-color: var(--cor-info-fundo);     color: var(--cor-info); }
+.kpi__ico--laranja { background-color: var(--cor-aviso-fundo);    color: var(--cor-aviso); }
+
+.kpi__rotulo { font-size: 0.82rem; color: var(--cor-texto-suave); margin-bottom: 0.2rem; }
+.kpi__valor  { font-size: 1.7rem; font-weight: var(--peso-negrito); line-height: 1; }

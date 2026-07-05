@@ -1,0 +1,10 @@
+/* ============================================================
+   USUARIOS.CSS — Específico da página Usuários
+   ============================================================ */
+
+.usuarios__email { font-size: 0.8rem; color: var(--cor-texto-claro); }
+
+/* Badge de nível de acesso */
+.nivel { display: inline-block; padding: 0.25rem 0.7rem; border-radius: var(--raio-cheio); font-size: 0.78rem; font-weight: var(--peso-semi); }
+.nivel--admin    { background-color: var(--cor-primaria-fundo); color: var(--cor-primaria); }
+.nivel--operador { background-color: var(--cor-info-fundo); color: var(--cor-info); }
