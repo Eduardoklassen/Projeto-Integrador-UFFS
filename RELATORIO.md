@@ -240,7 +240,7 @@ levou tempo. Houve ainda um alerta de segurança em uma versão da biblioteca de
 JWT, o que exigiu atualizar a dependência. Foram obstáculos no começo, mas que
 ajudaram a entender melhor como o PHP e o Composer funcionam.
 
-**O descompasso entre a API e o front-end.** Este foi o desafio central do
+**API e o front-end.** Este foi o desafio central do
 trabalho. O backend foi construído seguindo o cronograma de um curso de PHP, de
 forma relativamente genérica. Ao iniciar o desenvolvimento do front-end e
 conectar as telas à API, ficou claro que as duas partes não se encaixavam tão
@@ -255,7 +255,7 @@ zero para que a tela funcionasse. Situações semelhantes ocorreram em outras
 telas, e cada uma exigia retornar ao backend, criar ou ajustar o endpoint, e só
 então concluir a integração.
 
-**Divergência de nomes entre código e banco.** Um problema recorrente foi o
+**Conflito de nomes entre código e banco.** Um problema recorrente foi o
 código referenciar tabelas ou colunas com um nome, enquanto o banco usava outro.
 As telas de pedidos e compras, por exemplo, apresentavam o erro de "tabela não
 existe" porque o código buscava `historico_pedido` e `item_compra`, ao passo que
