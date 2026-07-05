@@ -1,39 +1,25 @@
 <?php
 
 namespace App\Models;
+
 use App\Core\Database;
 use PDO;
 
-//Caixa = conta onde entram receitas e saem despesas.
+
+ // Caixa é a conta de saldo, onde receitas aumentam e despesas diminuem; 
+ // o saldo é calculado pelos lançamentos, não editado manualmente.
 class Caixa
 {
     private PDO $db;
-
-    private const ORDENAVEIS = ['descricao', 'saldo', 'criado_em'];
 
     public function __construct()
     {
         $this->db = Database::getConnection();
     }
 
-    public function listar(array $opts = []): array
+    public function listar(): array
     {
-        $sql = 'SELECT * FROM caixa WHERE 1=1';
-        $bind = [];
-
-        if (!empty($opts['busca'])) {
-            $sql .= ' AND descricao LIKE :busca';
-            $bind['busca'] = '%' . $opts['busca'] . '%';
-        }
-
-        $ordenarPor = in_array($opts['ordenar'] ?? '', self::ORDENAVEIS, true)
-            ? $opts['ordenar'] : 'descricao';
-        $direcao = strtoupper($opts['dir'] ?? 'ASC') === 'DESC' ? 'DESC' : 'ASC';
-        $sql .= " ORDER BY {$ordenarPor} {$direcao}";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($bind);
-        return $stmt->fetchAll();
+        return $this->db->query('SELECT * FROM caixa ORDER BY id_caixa')->fetchAll();
     }
 
     public function buscar(int $id): ?array
@@ -46,25 +32,22 @@ class Caixa
     public function criar(array $d): int
     {
         $stmt = $this->db->prepare(
-            'INSERT INTO caixa (descricao, saldo) VALUES (:desc, :saldo)'
+            'INSERT INTO caixa (descricao, saldo) VALUES (:descricao, :saldo)'
         );
         $stmt->execute([
-            'desc'  => $d['descricao'],
-            'saldo' => $d['saldo'] ?? 0,
+            'descricao' => $d['descricao'],
+            'saldo'     => $d['saldo'] ?? 0,
         ]);
         return (int) $this->db->lastInsertId();
     }
 
+    /** Atualiza apenas a descrição (saldo é movimentado por receita/despesa). */
     public function atualizar(int $id, array $d): bool
     {
         $stmt = $this->db->prepare(
-            'UPDATE caixa SET descricao = :desc, saldo = :saldo WHERE id_caixa = :id'
+            'UPDATE caixa SET descricao = :descricao WHERE id_caixa = :id'
         );
-        return $stmt->execute([
-            'id'    => $id,
-            'desc'  => $d['descricao'],
-            'saldo' => $d['saldo'] ?? 0,
-        ]);
+        return $stmt->execute(['id' => $id, 'descricao' => $d['descricao']]);
     }
 
     public function excluir(int $id): bool
@@ -73,10 +56,12 @@ class Caixa
         return $stmt->execute(['id' => $id]);
     }
 
-    public function contar(): int
+    /** Soma/subtrai do saldo (usado por Receita e Despesa). */
+    public function movimentar(int $id, float $delta): void
     {
-        return (int) $this->db->query('SELECT COUNT(*) FROM caixa')->fetchColumn();
+        $stmt = $this->db->prepare(
+            'UPDATE caixa SET saldo = saldo + :delta WHERE id_caixa = :id'
+        );
+        $stmt->execute(['delta' => $delta, 'id' => $id]);
     }
 }
-
-?>
