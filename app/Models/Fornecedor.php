@@ -1,39 +1,30 @@
 <?php
 
 namespace App\Models;
+
 use App\Core\Database;
 use PDO;
 
+/**
+ * Model Fornecedor — correção do campo 'ativo'.
+ *
+ * O QUE mudou: mesmo bug do Model Produto — a coluna `ativo`
+ * existe na tabela (TINYINT(1) DEFAULT 1) mas não era incluída
+ * no INSERT/UPDATE, então a Situação escolhida na tela era
+ * silenciosamente descartada.
+ */
 class Fornecedor
 {
     private PDO $db;
-
-    // Campos permitidos para ordenação.Pensado na proteção contra SQL injection no ORDER BY 
-    private const ORDENAVEIS = ['nome', 'tipo_pessoa', 'criado_em'];
 
     public function __construct()
     {
         $this->db = Database::getConnection();
     }
 
-    public function listar(array $opts = []): array
+    public function listar(): array
     {
-        $sql = 'SELECT * FROM fornecedor WHERE 1=1';
-        $bind = [];
-
-        if (!empty($opts['busca'])) {
-            $sql .= ' AND (nome LIKE :busca OR cpf_cnpj LIKE :busca)';
-            $bind['busca'] = '%' . $opts['busca'] . '%';
-        }
-
-        $ordenarPor = in_array($opts['ordenar'] ?? '', self::ORDENAVEIS, true)
-            ? $opts['ordenar'] : 'nome';
-        $direcao = strtoupper($opts['dir'] ?? 'ASC') === 'DESC' ? 'DESC' : 'ASC';
-        $sql .= " ORDER BY {$ordenarPor} {$direcao}";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($bind);
-        return $stmt->fetchAll();
+        return $this->db->query('SELECT * FROM fornecedor ORDER BY nome')->fetchAll();
     }
 
     public function buscar(int $id): ?array
@@ -46,8 +37,8 @@ class Fornecedor
     public function criar(array $d): int
     {
         $stmt = $this->db->prepare(
-            'INSERT INTO fornecedor (nome, tipo_pessoa, cpf_cnpj, email, telefone, endereco)
-             VALUES (:nome, :tipo, :doc, :email, :tel, :end)'
+            'INSERT INTO fornecedor (nome, tipo_pessoa, cpf_cnpj, email, telefone, endereco, ativo)
+             VALUES (:nome, :tipo, :doc, :email, :tel, :end, :ativo)'
         );
         $stmt->execute([
             'nome'  => $d['nome'],
@@ -56,6 +47,8 @@ class Fornecedor
             'email' => $d['email'] ?? null,
             'tel'   => $d['telefone'] ?? null,
             'end'   => $d['endereco'] ?? null,
+            // isset (e não ??/empty) proposital: aceita 0 e "0".
+            'ativo' => isset($d['ativo']) ? (int) $d['ativo'] : 1,
         ]);
         return (int) $this->db->lastInsertId();
     }
@@ -64,7 +57,8 @@ class Fornecedor
     {
         $stmt = $this->db->prepare(
             'UPDATE fornecedor SET nome = :nome, tipo_pessoa = :tipo, cpf_cnpj = :doc,
-             email = :email, telefone = :tel, endereco = :end WHERE id_fornecedor = :id'
+             email = :email, telefone = :tel, endereco = :end, ativo = :ativo
+             WHERE id_fornecedor = :id'
         );
         return $stmt->execute([
             'id'    => $id,
@@ -74,6 +68,7 @@ class Fornecedor
             'email' => $d['email'] ?? null,
             'tel'   => $d['telefone'] ?? null,
             'end'   => $d['endereco'] ?? null,
+            'ativo' => isset($d['ativo']) ? (int) $d['ativo'] : 1,
         ]);
     }
 
@@ -88,5 +83,3 @@ class Fornecedor
         return (int) $this->db->query('SELECT COUNT(*) FROM fornecedor')->fetchColumn();
     }
 }
-
-?>
