@@ -12,6 +12,7 @@ use App\Controllers\ReceitaController;
 use App\Controllers\DespesaController;
 use App\Controllers\EnderecoController;
 use App\Controllers\CompraController;
+use App\Controllers\UsuarioController;
 
 /** @var \App\Core\Router $router */
 
@@ -87,6 +88,13 @@ $router->get('/api/compras',         [CompraController::class, 'index'],    ['au
 $router->get('/api/compras/{id}',    [CompraController::class, 'show'],     ['auth']);
 $router->post('/api/compras',        [CompraController::class, 'store'],    ['auth', 'admin']);
 $router->delete('/api/compras/{id}', [CompraController::class, 'destroy'],  ['auth', 'admin']);
+
+//  Usuários (CRUD — restrito a admin) 
+$router->get('/api/usuarios',        [UsuarioController::class, 'index'],   ['auth', 'admin']);
+$router->get('/api/usuarios/{id}',   [UsuarioController::class, 'show'],    ['auth', 'admin']);
+$router->post('/api/usuarios',       [UsuarioController::class, 'store'],   ['auth', 'admin']);
+$router->put('/api/usuarios/{id}',   [UsuarioController::class, 'update'],  ['auth', 'admin']);
+$router->delete('/api/usuarios/{id}',[UsuarioController::class, 'destroy'], ['auth', 'admin']);
 
 // Dashboard 
 $router->get('/api/dashboard',       [DashboardController::class, 'resumo'],['auth']);
