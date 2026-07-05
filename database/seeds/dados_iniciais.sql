@@ -7,7 +7,7 @@ USE controle_estoque_pedidos;
 -- Senha: "admin123" (hash bcrypt).
 -- Gere o seu próprio com: password_hash('suasenha', PASSWORD_DEFAULT)
 INSERT INTO usuario (nome_usuario, email, senha_hash, tipo_usuario) VALUES
-('Administrador', 'admin@local', '$2y$10$K26UtsBAARJaBxy32o3JSOKWvNI2M8O8S9uof7RangNI9x2Cicee.', 'admin');
+('Administrador', 'admin@local.com', '$2y$10$K26UtsBAARJaBxy32o3JSOKWvNI2M8O8S9uof7RangNI9x2Cicee.', 'admin');
 
 INSERT INTO cliente (nome, email, telefone, cpf_cnpj) VALUES
 ('Cliente Exemplo', 'cliente@exemplo.com', '5599999999999', '12345678900');
