@@ -1,44 +1,32 @@
 <?php
 
 namespace App\Models;
+
 use App\Core\Database;
 use PDO;
 
-/**
- * Receita = entrada de dinheiro. Pode vir de um pedido (id_pedido) e sempre
- * entra em um caixa (id_caixa). O listar traz dados do caixa por JOIN.
- */
+  // Receita — MOVIMENTA O SALDO DO CAIXA.
+  // um lançamento ele precisa refletir no saldo do caixa. Criar receita SOMA no caixa
+  // excluir/alterar estorna e reaplica. Tudo em transação, para o
+  // lançamento e o saldo nunca ficarem dessincronizados.
+
 class Receita
 {
     private PDO $db;
-
-    private const ORDENAVEIS = ['valor', 'data_receita', 'forma_pagamento'];
 
     public function __construct()
     {
         $this->db = Database::getConnection();
     }
-    public function listar(array $opts = []): array
+
+    public function listar(): array
     {
-        $sql = 'SELECT r.*, c.descricao AS caixa_descricao
-                FROM receita r
-                JOIN caixa c ON c.id_caixa = r.id_caixa
-                WHERE 1=1';
-        $bind = [];
-
-        if (!empty($opts['busca'])) {
-            $sql .= ' AND r.observacao LIKE :busca';
-            $bind['busca'] = '%' . $opts['busca'] . '%';
-        }
-
-        $ordenarPor = in_array($opts['ordenar'] ?? '', self::ORDENAVEIS, true)
-            ? $opts['ordenar'] : 'data_receita';
-        $direcao = strtoupper($opts['dir'] ?? 'DESC') === 'ASC' ? 'ASC' : 'DESC';
-        $sql .= " ORDER BY r.{$ordenarPor} {$direcao}";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($bind);
-        return $stmt->fetchAll();
+        return $this->db->query(
+            'SELECT r.*, r.data_receita AS criado_em, c.descricao AS caixa_descricao
+             FROM receita r
+             JOIN caixa c ON c.id_caixa = r.id_caixa
+             ORDER BY r.id_receita DESC'
+        )->fetchAll();
     }
 
     public function buscar(int $id): ?array
@@ -50,55 +38,77 @@ class Receita
 
     public function criar(array $d): int
     {
-        $stmt = $this->db->prepare(
-            'INSERT INTO receita (id_pedido, id_caixa, valor, forma_pagamento, data_receita, observacao)
-             VALUES (:pedido, :caixa, :valor, :forma, :data, :obs)'
-        );
-        $stmt->execute([
-            'pedido' => $d['id_pedido'] ?? null,
-            'caixa'  => $d['id_caixa'],
-            'valor'  => $d['valor'],
-            'forma'  => $d['forma_pagamento'] ?? 'outro',
-            'data'   => $d['data_receita'] ?? date('Y-m-d'),
-            'obs'    => $d['observacao'] ?? null,
-        ]);
-        return (int) $this->db->lastInsertId();
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare(
+                'INSERT INTO receita (id_caixa, id_pedido, valor, forma_pagamento, observacao)
+                 VALUES (:caixa, :pedido, :valor, :forma, :obs)'
+            );
+            $stmt->execute([
+                'caixa'  => $d['id_caixa'],
+                'pedido' => !empty($d['id_pedido']) ? $d['id_pedido'] : null,
+                'valor'  => $d['valor'],
+                'forma'  => $d['forma_pagamento'] ?? null,
+                'obs'    => $d['observacao'] ?? null,
+            ]);
+            $id = (int) $this->db->lastInsertId();
+
+            (new Caixa())->movimentar((int) $d['id_caixa'], +(float) $d['valor']);
+
+            $this->db->commit();
+            return $id;
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
     }
 
-    public function atualizar(int $id, array $d): bool
+    // Atualiza estornando o valor antigo e aplicando o novo. 
+    public function atualizar(int $id, array $d): void
     {
-        $stmt = $this->db->prepare(
-            'UPDATE receita SET id_pedido = :pedido, id_caixa = :caixa, valor = :valor,
-             forma_pagamento = :forma, data_receita = :data, observacao = :obs
-             WHERE id_receita = :id'
-        );
-        return $stmt->execute([
-            'id'     => $id,
-            'pedido' => $d['id_pedido'] ?? null,
-            'caixa'  => $d['id_caixa'],
-            'valor'  => $d['valor'],
-            'forma'  => $d['forma_pagamento'] ?? 'outro',
-            'data'   => $d['data_receita'] ?? date('Y-m-d'),
-            'obs'    => $d['observacao'] ?? null,
-        ]);
+        $this->db->beginTransaction();
+        try {
+            $atual = $this->buscar($id);
+
+            $stmt = $this->db->prepare(
+                'UPDATE receita SET id_caixa = :caixa, id_pedido = :pedido,
+                 valor = :valor, forma_pagamento = :forma, observacao = :obs
+                 WHERE id_receita = :id'
+            );
+            $stmt->execute([
+                'id'     => $id,
+                'caixa'  => $d['id_caixa'],
+                'pedido' => !empty($d['id_pedido']) ? $d['id_pedido'] : null,
+                'valor'  => $d['valor'],
+                'forma'  => $d['forma_pagamento'] ?? null,
+                'obs'    => $d['observacao'] ?? null,
+            ]);
+
+            $caixa = new Caixa();
+            $caixa->movimentar((int) $atual['id_caixa'], -(float) $atual['valor']); // estorna
+            $caixa->movimentar((int) $d['id_caixa'], +(float) $d['valor']);          // reaplica
+
+            $this->db->commit();
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
     }
 
-    public function excluir(int $id): bool
+    public function excluir(int $id): void
     {
-        $stmt = $this->db->prepare('DELETE FROM receita WHERE id_receita = :id');
-        return $stmt->execute(['id' => $id]);
-    }
+        $this->db->beginTransaction();
+        try {
+            $atual = $this->buscar($id);
+            $stmt = $this->db->prepare('DELETE FROM receita WHERE id_receita = :id');
+            $stmt->execute(['id' => $id]);
 
-    public function contar(): int
-    {
-        return (int) $this->db->query('SELECT COUNT(*) FROM receita')->fetchColumn();
-    }
+            (new Caixa())->movimentar((int) $atual['id_caixa'], -(float) $atual['valor']);
 
-    // Soma total de receitas
-    public function somaTotal(): float
-    {
-        return (float) $this->db->query('SELECT COALESCE(SUM(valor),0) FROM receita')->fetchColumn();
+            $this->db->commit();
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
     }
 }
-
-?>
