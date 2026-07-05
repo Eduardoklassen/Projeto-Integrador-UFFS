@@ -1,22 +1,22 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2026-06-06T00:00:00.000Z",
-  "__export_source": "insomnia.desktop.app:v8",
+  "__export_date": "2026-07-03T00:00:00.000Z",
+  "__export_source": "nino-klassen-generator",
   "resources": [
     {
-      "_id": "wrk_estoque_pedidos",
+      "_id": "wrk_1783091927972208_1",
       "_type": "workspace",
       "parentId": null,
-      "name": "Controle de Estoque e Pedidos - GEX613",
-      "description": "Coleção completa (ER expandido). Faça o Login primeiro e cole o token na variável {{ token }} do Base Environment. Criações retornam 201; exclusões retornam 204. Inclui materiais, caixas, receitas, despesas, endereços e compras.",
+      "name": "Nino Klassen API",
+      "description": "Coleção completa — 52 rotas (gerada)",
       "scope": "collection"
     },
     {
-      "_id": "env_base",
+      "_id": "env_1783091927972208_2",
       "_type": "environment",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "Base Environment",
+      "parentId": "wrk_1783091927972208_1",
+      "name": "Base",
       "data": {
         "base_url": "http://localhost:8000",
         "token": ""
@@ -27,1029 +27,1115 @@
           "token"
         ]
       },
+      "metaSortKey": 0
+    },
+    {
+      "_id": "fld_1783091927972208_3",
+      "_type": "request_group",
+      "parentId": "wrk_1783091927972208_1",
+      "name": "① Auth",
       "metaSortKey": 1
     },
     {
-      "_id": "fld_auth",
-      "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "1. Autenticação",
-      "metaSortKey": -100
-    },
-    {
-      "_id": "req_login",
+      "_id": "req_1783091927972208_4",
       "_type": "request",
-      "parentId": "fld_auth",
-      "name": "Login (salva token)",
+      "parentId": "fld_1783091927972208_3",
+      "name": "POST login",
       "method": "POST",
-      "url": "{{ base_url }}/api/login",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"email\": \"admin@local\",\n  \"senha\": \"admin123\"\n}"
-      },
+      "url": "{{ _.base_url }}/api/login",
       "headers": [
         {
           "name": "Content-Type",
-          "value": "application/json"
+          "value": "application/json",
+          "id": "pair_1783091927972208_5"
         }
       ],
-      "metaSortKey": -100,
-      "description": "Autentica e retorna um token JWT. Veja a aba 'Tests' / use o response em dados.token."
-    },
-    {
-      "_id": "req_register",
-      "_type": "request",
-      "parentId": "fld_auth",
-      "name": "Registrar usuário",
-      "method": "POST",
-      "url": "{{ base_url }}/api/register",
+      "metaSortKey": 1,
+      "description": "Roda primeiro. O script salva o token no environment automaticamente.",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"nome_usuario\": \"Usuário Comum\",\n  \"email\": \"usuario@local\",\n  \"senha\": \"senha123\",\n  \"tipo_usuario\": \"comum\"\n}"
+        "text": "{\n  \"email\": \"admin@local.com\",\n  \"senha\": \"admin123\"\n}"
       },
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        }
-      ],
-      "metaSortKey": -90
+      "afterResponseScript": "const body = insomnia.response.json();\nif (body && body.dados && body.dados.token) {\n  insomnia.environment.set('token', body.dados.token);\n  console.log('Token salvo!');\n}"
     },
     {
-      "_id": "fld_produtos",
-      "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "2. Produtos (CRUD)",
-      "metaSortKey": -90
-    },
-    {
-      "_id": "req_prod_list",
+      "_id": "req_1783091927972208_6",
       "_type": "request",
-      "parentId": "fld_produtos",
-      "name": "Listar produtos (ordenar + filtrar)",
-      "method": "GET",
-      "url": "{{ base_url }}/api/produtos?ordenar=preco_final&dir=desc&busca=Produto",
+      "parentId": "fld_1783091927972208_3",
+      "name": "POST register (admin)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/register",
       "headers": [
         {
           "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "metaSortKey": -100
-    },
-    {
-      "_id": "req_prod_show",
-      "_type": "request",
-      "parentId": "fld_produtos",
-      "name": "Detalhar produto",
-      "method": "GET",
-      "url": "{{ base_url }}/api/produtos/1",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "metaSortKey": -90
-    },
-    {
-      "_id": "req_prod_create",
-      "_type": "request",
-      "parentId": "fld_produtos",
-      "name": "Criar produto (admin)",
-      "method": "POST",
-      "url": "{{ base_url }}/api/produtos",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"nome\": \"Teclado Mecânico\",\n  \"preco_final\": 250.00,\n  \"estoque\": 15,\n  \"observacao\": \"RGB\"\n}"
-      },
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_7"
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_8"
         }
       ],
-      "metaSortKey": -80
+      "metaSortKey": 2,
+      "description": "Agora exige admin logado (segurança).",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome_usuario\": \"Fulano\",\n  \"email\": \"fulano@local.com\",\n  \"senha\": \"senha123\"\n}"
+      }
     },
     {
-      "_id": "req_prod_update",
+      "_id": "fld_1783091927972208_9",
+      "_type": "request_group",
+      "parentId": "wrk_1783091927972208_1",
+      "name": "② Produtos",
+      "metaSortKey": 2
+    },
+    {
+      "_id": "req_1783091927972208_10",
       "_type": "request",
-      "parentId": "fld_produtos",
-      "name": "Atualizar produto (admin)",
+      "parentId": "fld_1783091927972208_9",
+      "name": "GET produtos",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/produtos",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_11"
+        }
+      ],
+      "metaSortKey": 1
+    },
+    {
+      "_id": "req_1783091927972208_12",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_9",
+      "name": "GET produtos/1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/produtos/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_13"
+        }
+      ],
+      "metaSortKey": 2
+    },
+    {
+      "_id": "req_1783091927972208_14",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_9",
+      "name": "POST produtos",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/produtos",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_15"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_16"
+        }
+      ],
+      "metaSortKey": 3,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Produto Teste\",\n  \"preco_final\": \"19.90\",\n  \"estoque\": 100,\n  \"observacao\": \"via insomnia\",\n  \"ativo\": 1\n}"
+      }
+    },
+    {
+      "_id": "req_1783091927972208_17",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_9",
+      "name": "PUT produtos/1",
       "method": "PUT",
-      "url": "{{ base_url }}/api/produtos/1",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"nome\": \"Teclado Mecânico RGB\",\n  \"preco_final\": 299.90,\n  \"estoque\": 12\n}"
-      },
+      "url": "{{ _.base_url }}/api/produtos/1",
       "headers": [
         {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_18"
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_19"
         }
       ],
-      "metaSortKey": -70
+      "metaSortKey": 4,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Produto Teste\",\n  \"preco_final\": \"19.90\",\n  \"estoque\": 100,\n  \"observacao\": \"via insomnia\",\n  \"ativo\": 1\n}"
+      }
     },
     {
-      "_id": "req_prod_delete",
+      "_id": "req_1783091927972208_20",
       "_type": "request",
-      "parentId": "fld_produtos",
-      "name": "Excluir produto (admin)",
+      "parentId": "fld_1783091927972208_9",
+      "name": "DELETE produtos/1",
       "method": "DELETE",
-      "url": "{{ base_url }}/api/produtos/1",
+      "url": "{{ _.base_url }}/api/produtos/1",
       "headers": [
         {
           "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_21"
         }
       ],
-      "metaSortKey": -60
+      "metaSortKey": 5
     },
     {
-      "_id": "fld_pedidos",
+      "_id": "fld_1783091927972208_22",
       "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "3. Pedidos (CRUD completo)",
-      "metaSortKey": -80
+      "parentId": "wrk_1783091927972208_1",
+      "name": "③ Materiais",
+      "metaSortKey": 3
     },
     {
-      "_id": "req_ped_list",
+      "_id": "req_1783091927972208_23",
       "_type": "request",
-      "parentId": "fld_pedidos",
-      "name": "Listar pedidos",
+      "parentId": "fld_1783091927972208_22",
+      "name": "GET materiais",
       "method": "GET",
-      "url": "{{ base_url }}/api/pedidos",
+      "url": "{{ _.base_url }}/api/materiais",
       "headers": [
         {
           "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_24"
         }
       ],
-      "metaSortKey": -100
+      "metaSortKey": 1
     },
     {
-      "_id": "req_ped_create",
+      "_id": "req_1783091927972208_25",
       "_type": "request",
-      "parentId": "fld_pedidos",
-      "name": "Criar pedido",
+      "parentId": "fld_1783091927972208_22",
+      "name": "GET materiais/1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/materiais/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_26"
+        }
+      ],
+      "metaSortKey": 2
+    },
+    {
+      "_id": "req_1783091927972208_27",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_22",
+      "name": "POST materiais",
       "method": "POST",
-      "url": "{{ base_url }}/api/pedidos",
+      "url": "{{ _.base_url }}/api/materiais",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_28"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_29"
+        }
+      ],
+      "metaSortKey": 3,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Cimento CP-II\",\n  \"unidade_medida\": \"sc\",\n  \"custo_unitario\": \"32.50\",\n  \"estoque\": 40,\n  \"ativo\": 1\n}"
+      }
+    },
+    {
+      "_id": "req_1783091927972208_30",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_22",
+      "name": "PUT materiais/1",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/materiais/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_31"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_32"
+        }
+      ],
+      "metaSortKey": 4,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Cimento CP-II\",\n  \"unidade_medida\": \"sc\",\n  \"custo_unitario\": \"32.50\",\n  \"estoque\": 40,\n  \"ativo\": 1\n}"
+      }
+    },
+    {
+      "_id": "req_1783091927972208_33",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_22",
+      "name": "DELETE materiais/1",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/materiais/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_34"
+        }
+      ],
+      "metaSortKey": 5
+    },
+    {
+      "_id": "fld_1783091927972208_35",
+      "_type": "request_group",
+      "parentId": "wrk_1783091927972208_1",
+      "name": "④ Clientes",
+      "metaSortKey": 4
+    },
+    {
+      "_id": "req_1783091927972208_36",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_35",
+      "name": "GET clientes",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/clientes",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_37"
+        }
+      ],
+      "metaSortKey": 1
+    },
+    {
+      "_id": "req_1783091927972208_38",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_35",
+      "name": "GET clientes/1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/clientes/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_39"
+        }
+      ],
+      "metaSortKey": 2
+    },
+    {
+      "_id": "req_1783091927972208_40",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_35",
+      "name": "POST clientes",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/clientes",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_41"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_42"
+        }
+      ],
+      "metaSortKey": 3,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Cliente Teste\",\n  \"email\": \"cliente@teste.com\",\n  \"telefone\": \"5599999999999\",\n  \"cpf_cnpj\": \"12345678900\"\n}"
+      }
+    },
+    {
+      "_id": "req_1783091927972208_43",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_35",
+      "name": "PUT clientes/1",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/clientes/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_44"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_45"
+        }
+      ],
+      "metaSortKey": 4,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Cliente Teste\",\n  \"email\": \"cliente@teste.com\",\n  \"telefone\": \"5599999999999\",\n  \"cpf_cnpj\": \"12345678900\"\n}"
+      }
+    },
+    {
+      "_id": "req_1783091927972208_46",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_35",
+      "name": "DELETE clientes/1",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/clientes/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_47"
+        }
+      ],
+      "metaSortKey": 5
+    },
+    {
+      "_id": "fld_1783091927972208_48",
+      "_type": "request_group",
+      "parentId": "wrk_1783091927972208_1",
+      "name": "⑤ Fornecedores",
+      "metaSortKey": 5
+    },
+    {
+      "_id": "req_1783091927972208_49",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_48",
+      "name": "GET fornecedores",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/fornecedores",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_50"
+        }
+      ],
+      "metaSortKey": 1
+    },
+    {
+      "_id": "req_1783091927972208_51",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_48",
+      "name": "GET fornecedores/1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/fornecedores/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_52"
+        }
+      ],
+      "metaSortKey": 2
+    },
+    {
+      "_id": "req_1783091927972208_53",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_48",
+      "name": "POST fornecedores",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/fornecedores",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_54"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_55"
+        }
+      ],
+      "metaSortKey": 3,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Fornecedor Teste Ltda\",\n  \"tipo_pessoa\": \"juridica\",\n  \"cpf_cnpj\": \"12345678000199\",\n  \"email\": \"f@teste.com\",\n  \"telefone\": \"5599888887777\",\n  \"endereco\": \"Rua X, 123\",\n  \"ativo\": 1\n}"
+      }
+    },
+    {
+      "_id": "req_1783091927972208_56",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_48",
+      "name": "PUT fornecedores/1",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/fornecedores/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_57"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_58"
+        }
+      ],
+      "metaSortKey": 4,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Fornecedor Teste Ltda\",\n  \"tipo_pessoa\": \"juridica\",\n  \"cpf_cnpj\": \"12345678000199\",\n  \"email\": \"f@teste.com\",\n  \"telefone\": \"5599888887777\",\n  \"endereco\": \"Rua X, 123\",\n  \"ativo\": 1\n}"
+      }
+    },
+    {
+      "_id": "req_1783091927972208_59",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_48",
+      "name": "DELETE fornecedores/1",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/fornecedores/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_60"
+        }
+      ],
+      "metaSortKey": 5
+    },
+    {
+      "_id": "fld_1783091927972208_61",
+      "_type": "request_group",
+      "parentId": "wrk_1783091927972208_1",
+      "name": "⑥ Pedidos",
+      "metaSortKey": 6
+    },
+    {
+      "_id": "req_1783091927972208_62",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_61",
+      "name": "GET pedidos",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/pedidos",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_63"
+        }
+      ],
+      "metaSortKey": 1
+    },
+    {
+      "_id": "req_1783091927972208_64",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_61",
+      "name": "GET pedidos/1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/pedidos/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_65"
+        }
+      ],
+      "metaSortKey": 2
+    },
+    {
+      "_id": "req_1783091927972208_66",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_61",
+      "name": "POST pedidos (com itens)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/pedidos",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_67"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_68"
+        }
+      ],
+      "metaSortKey": 3,
+      "description": "Cria pedido + itens + baixa estoque + histórico.",
       "body": {
         "mimeType": "application/json",
         "text": "{\n  \"id_cliente\": 1,\n  \"itens\": [\n    {\n      \"id_produto\": 1,\n      \"quantidade\": 2,\n      \"valor_unitario\": 19.9\n    }\n  ]\n}"
-      },
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "metaSortKey": -90
+      }
     },
     {
-      "_id": "fld_clientes",
-      "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "4. Clientes (esqueleto)",
-      "metaSortKey": -70
-    },
-    {
-      "_id": "req_cli_list",
+      "_id": "req_1783091927972208_69",
       "_type": "request",
-      "parentId": "fld_clientes",
-      "name": "Listar clientes",
-      "method": "GET",
-      "url": "{{ base_url }}/api/clientes",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "metaSortKey": -100
-    },
-    {
-      "_id": "req_cli_create",
-      "_type": "request",
-      "parentId": "fld_clientes",
-      "name": "Criar cliente",
-      "method": "POST",
-      "url": "{{ base_url }}/api/clientes",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"nome\": \"Cliente Novo\",\n  \"email\": \"novo@cliente.com\",\n  \"telefone\": \"5599988887777\",\n  \"cpf_cnpj\": \"98765432100\"\n}"
-      },
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "metaSortKey": -90
-    },
-    {
-      "_id": "fld_dashboard",
-      "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "5. Dashboard",
-      "metaSortKey": -60
-    },
-    {
-      "_id": "req_dash",
-      "_type": "request",
-      "parentId": "fld_dashboard",
-      "name": "Resumo (contagens)",
-      "method": "GET",
-      "url": "{{ base_url }}/api/dashboard",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "metaSortKey": -100
-    },
-    {
-      "_id": "fld_fornecedores",
-      "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "4b. Fornecedores (CRUD)",
-      "metaSortKey": -65
-    },
-    {
-      "_id": "req_forn_list",
-      "_type": "request",
-      "parentId": "fld_fornecedores",
-      "name": "Listar fornecedores (ordenar + filtrar)",
-      "method": "GET",
-      "url": "{{ base_url }}/api/fornecedores?ordenar=nome&dir=asc&busca=Exemplo",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "metaSortKey": -100
-    },
-    {
-      "_id": "req_forn_show",
-      "_type": "request",
-      "parentId": "fld_fornecedores",
-      "name": "Detalhar fornecedor",
-      "method": "GET",
-      "url": "{{ base_url }}/api/fornecedores/1",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "metaSortKey": -90
-    },
-    {
-      "_id": "req_forn_create",
-      "_type": "request",
-      "parentId": "fld_fornecedores",
-      "name": "Criar fornecedor (admin)",
-      "method": "POST",
-      "url": "{{ base_url }}/api/fornecedores",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"nome\": \"Distribuidora Sul Ltda\",\n  \"tipo_pessoa\": \"juridica\",\n  \"cpf_cnpj\": \"98765432000188\",\n  \"email\": \"vendas@distsul.com\",\n  \"telefone\": \"5599777776666\",\n  \"endereco\": \"Av. Central, 1000\"\n}"
-      },
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "metaSortKey": -80
-    },
-    {
-      "_id": "req_forn_update",
-      "_type": "request",
-      "parentId": "fld_fornecedores",
-      "name": "Atualizar fornecedor (admin)",
+      "parentId": "fld_1783091927972208_61",
+      "name": "PUT pedidos/1 (status)",
       "method": "PUT",
-      "url": "{{ base_url }}/api/fornecedores/1",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"nome\": \"Distribuidora Sul S.A.\",\n  \"tipo_pessoa\": \"juridica\",\n  \"cpf_cnpj\": \"98765432000188\",\n  \"email\": \"contato@distsul.com\"\n}"
-      },
+      "url": "{{ _.base_url }}/api/pedidos/1",
       "headers": [
         {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_70"
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "metaSortKey": -70
-    },
-    {
-      "_id": "req_forn_delete",
-      "_type": "request",
-      "parentId": "fld_fornecedores",
-      "name": "Excluir fornecedor (admin)",
-      "method": "DELETE",
-      "url": "{{ base_url }}/api/fornecedores/1",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "metaSortKey": -60
-    },
-    {
-      "_id": "req_forn_invalido",
-      "_type": "request",
-      "parentId": "fld_fornecedores",
-      "name": "Criar fornecedor INVÁLIDO (testa validação 422)",
-      "method": "POST",
-      "url": "{{ base_url }}/api/fornecedores",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"nome\": \"X\",\n  \"cpf_cnpj\": \"123\",\n  \"email\": \"email-invalido\"\n}"
-      },
-      "headers": [
-        {
           "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "value": "application/json",
+          "id": "pair_1783091927972208_71"
         }
       ],
-      "metaSortKey": -55,
-      "description": "Deve retornar 422 com a lista de erros: nome curto, CPF/CNPJ com formato errado e e-mail inválido."
-    },
-    {
-      "_id": "req_ped_show",
-      "_type": "request",
-      "parentId": "fld_pedidos",
-      "name": "Detalhar pedido (itens+historico)",
-      "method": "GET",
-      "url": "{{ base_url }}/api/pedidos/1",
-      "metaSortKey": -80,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_ped_status",
-      "_type": "request",
-      "parentId": "fld_pedidos",
-      "name": "Mudar status do pedido (PUT)",
-      "method": "PUT",
-      "url": "{{ base_url }}/api/pedidos/1",
-      "metaSortKey": -70,
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
+      "metaSortKey": 4,
+      "description": "Só muda o status: aberto/pago/enviado/entregue/cancelado.",
       "body": {
         "mimeType": "application/json",
         "text": "{\n  \"status\": \"pago\"\n}"
-      },
-      "description": "Muda o status e grava no historico_status (#6). Status validos: aberto, pago, enviado, entregue, cancelado."
-    },
-    {
-      "_id": "req_ped_delete",
-      "_type": "request",
-      "parentId": "fld_pedidos",
-      "name": "Excluir pedido (admin)",
-      "method": "DELETE",
-      "url": "{{ base_url }}/api/pedidos/1",
-      "metaSortKey": -60,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "fld_materiais",
-      "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "6. Materiais (CRUD)",
-      "metaSortKey": -50
-    },
-    {
-      "_id": "req_mat_list",
-      "_type": "request",
-      "parentId": "fld_materiais",
-      "name": "Listar materiais",
-      "method": "GET",
-      "url": "{{ base_url }}/api/materiais?ordenar=nome&dir=asc",
-      "metaSortKey": -100,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_mat_show",
-      "_type": "request",
-      "parentId": "fld_materiais",
-      "name": "Detalhar material",
-      "method": "GET",
-      "url": "{{ base_url }}/api/materiais/1",
-      "metaSortKey": -90,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_mat_create",
-      "_type": "request",
-      "parentId": "fld_materiais",
-      "name": "Criar material (admin)",
-      "method": "POST",
-      "url": "{{ base_url }}/api/materiais",
-      "metaSortKey": -80,
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"nome\": \"Brita\",\n  \"unidade_medida\": \"m3\",\n  \"custo_unitario\": 90.0,\n  \"estoque\": 0\n}"
       }
     },
     {
-      "_id": "req_mat_update",
+      "_id": "req_1783091927972208_72",
       "_type": "request",
-      "parentId": "fld_materiais",
-      "name": "Atualizar material (admin)",
+      "parentId": "fld_1783091927972208_61",
+      "name": "DELETE pedidos/1",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/pedidos/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_73"
+        }
+      ],
+      "metaSortKey": 5,
+      "description": "Devolve o estoque."
+    },
+    {
+      "_id": "fld_1783091927972208_74",
+      "_type": "request_group",
+      "parentId": "wrk_1783091927972208_1",
+      "name": "⑦ Compras",
+      "metaSortKey": 7
+    },
+    {
+      "_id": "req_1783091927972208_75",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_74",
+      "name": "GET compras",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/compras",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_76"
+        }
+      ],
+      "metaSortKey": 1
+    },
+    {
+      "_id": "req_1783091927972208_77",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_74",
+      "name": "GET compras/1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/compras/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_78"
+        }
+      ],
+      "metaSortKey": 2
+    },
+    {
+      "_id": "req_1783091927972208_79",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_74",
+      "name": "POST compras (com itens)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/compras",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_80"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_81"
+        }
+      ],
+      "metaSortKey": 3,
+      "description": "Cria compra + itens + ENTRADA no estoque. Sem PUT (compra não se edita).",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id_fornecedor\": 1,\n  \"itens\": [\n    {\n      \"id_material\": 1,\n      \"quantidade\": 20,\n      \"custo_unitario\": 32.5\n    }\n  ]\n}"
+      }
+    },
+    {
+      "_id": "req_1783091927972208_82",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_74",
+      "name": "DELETE compras/1",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/compras/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_83"
+        }
+      ],
+      "metaSortKey": 4,
+      "description": "Estorna o estoque."
+    },
+    {
+      "_id": "fld_1783091927972208_84",
+      "_type": "request_group",
+      "parentId": "wrk_1783091927972208_1",
+      "name": "⑧ Caixas",
+      "metaSortKey": 8
+    },
+    {
+      "_id": "req_1783091927972208_85",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_84",
+      "name": "GET caixas",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/caixas",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_86"
+        }
+      ],
+      "metaSortKey": 1
+    },
+    {
+      "_id": "req_1783091927972208_87",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_84",
+      "name": "GET caixas/1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/caixas/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_88"
+        }
+      ],
+      "metaSortKey": 2
+    },
+    {
+      "_id": "req_1783091927972208_89",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_84",
+      "name": "POST caixas",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/caixas",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_90"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_91"
+        }
+      ],
+      "metaSortKey": 3,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"descricao\": \"Caixa Teste\",\n  \"saldo\": \"0.00\"\n}"
+      }
+    },
+    {
+      "_id": "req_1783091927972208_92",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_84",
+      "name": "PUT caixas/1",
       "method": "PUT",
-      "url": "{{ base_url }}/api/materiais/1",
-      "metaSortKey": -70,
+      "url": "{{ _.base_url }}/api/caixas/1",
       "headers": [
         {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_93"
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_94"
         }
       ],
+      "metaSortKey": 4,
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"nome\": \"Areia Fina\",\n  \"unidade_medida\": \"m3\",\n  \"custo_unitario\": 85.0,\n  \"estoque\": 10\n}"
+        "text": "{\n  \"descricao\": \"Caixa Teste\",\n  \"saldo\": \"0.00\"\n}"
       }
     },
     {
-      "_id": "req_mat_delete",
+      "_id": "req_1783091927972208_95",
       "_type": "request",
-      "parentId": "fld_materiais",
-      "name": "Excluir material (admin)",
+      "parentId": "fld_1783091927972208_84",
+      "name": "DELETE caixas/1",
       "method": "DELETE",
-      "url": "{{ base_url }}/api/materiais/1",
-      "metaSortKey": -60,
+      "url": "{{ _.base_url }}/api/caixas/1",
       "headers": [
         {
           "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "fld_caixas",
-      "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "7. Caixas (CRUD)",
-      "metaSortKey": -45
-    },
-    {
-      "_id": "req_cx_list",
-      "_type": "request",
-      "parentId": "fld_caixas",
-      "name": "Listar caixas",
-      "method": "GET",
-      "url": "{{ base_url }}/api/caixas",
-      "metaSortKey": -100,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_cx_show",
-      "_type": "request",
-      "parentId": "fld_caixas",
-      "name": "Detalhar caixa",
-      "method": "GET",
-      "url": "{{ base_url }}/api/caixas/1",
-      "metaSortKey": -90,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_cx_create",
-      "_type": "request",
-      "parentId": "fld_caixas",
-      "name": "Criar caixa (admin)",
-      "method": "POST",
-      "url": "{{ base_url }}/api/caixas",
-      "metaSortKey": -80,
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_96"
         }
       ],
+      "metaSortKey": 5
+    },
+    {
+      "_id": "fld_1783091927972208_97",
+      "_type": "request_group",
+      "parentId": "wrk_1783091927972208_1",
+      "name": "⑨ Receitas",
+      "metaSortKey": 9
+    },
+    {
+      "_id": "req_1783091927972208_98",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_97",
+      "name": "GET receitas",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/receitas",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_99"
+        }
+      ],
+      "metaSortKey": 1
+    },
+    {
+      "_id": "req_1783091927972208_100",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_97",
+      "name": "GET receitas/1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/receitas/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_101"
+        }
+      ],
+      "metaSortKey": 2
+    },
+    {
+      "_id": "req_1783091927972208_102",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_97",
+      "name": "POST receitas",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/receitas",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_103"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_104"
+        }
+      ],
+      "metaSortKey": 3,
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"descricao\": \"Caixa Secundário\",\n  \"saldo\": 0\n}"
+        "text": "{\n  \"id_caixa\": 1,\n  \"id_pedido\": 1,\n  \"valor\": \"39.80\",\n  \"forma_pagamento\": \"pix\",\n  \"observacao\": \"venda\"\n}"
       }
     },
     {
-      "_id": "req_cx_update",
+      "_id": "req_1783091927972208_105",
       "_type": "request",
-      "parentId": "fld_caixas",
-      "name": "Atualizar caixa (admin)",
+      "parentId": "fld_1783091927972208_97",
+      "name": "PUT receitas/1",
       "method": "PUT",
-      "url": "{{ base_url }}/api/caixas/1",
-      "metaSortKey": -70,
+      "url": "{{ _.base_url }}/api/receitas/1",
       "headers": [
         {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_106"
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_107"
         }
       ],
+      "metaSortKey": 4,
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"descricao\": \"Caixa Principal\",\n  \"saldo\": 1000.0\n}"
+        "text": "{\n  \"id_caixa\": 1,\n  \"id_pedido\": 1,\n  \"valor\": \"39.80\",\n  \"forma_pagamento\": \"pix\",\n  \"observacao\": \"venda\"\n}"
       }
     },
     {
-      "_id": "req_cx_delete",
+      "_id": "req_1783091927972208_108",
       "_type": "request",
-      "parentId": "fld_caixas",
-      "name": "Excluir caixa (admin)",
+      "parentId": "fld_1783091927972208_97",
+      "name": "DELETE receitas/1",
       "method": "DELETE",
-      "url": "{{ base_url }}/api/caixas/1",
-      "metaSortKey": -60,
+      "url": "{{ _.base_url }}/api/receitas/1",
       "headers": [
         {
           "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "fld_receitas",
-      "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "8. Receitas (CRUD)",
-      "metaSortKey": -40
-    },
-    {
-      "_id": "req_rec_list",
-      "_type": "request",
-      "parentId": "fld_receitas",
-      "name": "Listar receitas",
-      "method": "GET",
-      "url": "{{ base_url }}/api/receitas?ordenar=data_receita&dir=desc",
-      "metaSortKey": -100,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_rec_show",
-      "_type": "request",
-      "parentId": "fld_receitas",
-      "name": "Detalhar receita",
-      "method": "GET",
-      "url": "{{ base_url }}/api/receitas/1",
-      "metaSortKey": -90,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_rec_create",
-      "_type": "request",
-      "parentId": "fld_receitas",
-      "name": "Criar receita",
-      "method": "POST",
-      "url": "{{ base_url }}/api/receitas",
-      "metaSortKey": -80,
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_109"
         }
       ],
+      "metaSortKey": 5
+    },
+    {
+      "_id": "fld_1783091927972208_110",
+      "_type": "request_group",
+      "parentId": "wrk_1783091927972208_1",
+      "name": "⑩ Despesas",
+      "metaSortKey": 10
+    },
+    {
+      "_id": "req_1783091927972208_111",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_110",
+      "name": "GET despesas",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/despesas",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_112"
+        }
+      ],
+      "metaSortKey": 1
+    },
+    {
+      "_id": "req_1783091927972208_113",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_110",
+      "name": "GET despesas/1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/despesas/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_114"
+        }
+      ],
+      "metaSortKey": 2
+    },
+    {
+      "_id": "req_1783091927972208_115",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_110",
+      "name": "POST despesas",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/despesas",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_116"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_117"
+        }
+      ],
+      "metaSortKey": 3,
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"id_caixa\": 1,\n  \"id_pedido\": 1,\n  \"valor\": 150.0,\n  \"forma_pagamento\": \"pix\",\n  \"observacao\": \"Recebimento pedido 1\"\n}"
+        "text": "{\n  \"id_caixa\": 1,\n  \"valor\": \"15.00\",\n  \"tipo_movimentacao\": \"operacional\",\n  \"observacao\": \"conta de luz\"\n}"
       }
     },
     {
-      "_id": "req_rec_update",
+      "_id": "req_1783091927972208_118",
       "_type": "request",
-      "parentId": "fld_receitas",
-      "name": "Atualizar receita",
+      "parentId": "fld_1783091927972208_110",
+      "name": "PUT despesas/1",
       "method": "PUT",
-      "url": "{{ base_url }}/api/receitas/1",
-      "metaSortKey": -70,
+      "url": "{{ _.base_url }}/api/despesas/1",
       "headers": [
         {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_119"
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_120"
         }
       ],
+      "metaSortKey": 4,
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"id_caixa\": 1,\n  \"valor\": 175.0,\n  \"forma_pagamento\": \"dinheiro\"\n}"
+        "text": "{\n  \"id_caixa\": 1,\n  \"valor\": \"15.00\",\n  \"tipo_movimentacao\": \"operacional\",\n  \"observacao\": \"conta de luz\"\n}"
       }
     },
     {
-      "_id": "req_rec_delete",
+      "_id": "req_1783091927972208_121",
       "_type": "request",
-      "parentId": "fld_receitas",
-      "name": "Excluir receita (admin)",
+      "parentId": "fld_1783091927972208_110",
+      "name": "DELETE despesas/1",
       "method": "DELETE",
-      "url": "{{ base_url }}/api/receitas/1",
-      "metaSortKey": -60,
+      "url": "{{ _.base_url }}/api/despesas/1",
       "headers": [
         {
           "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "fld_despesas",
-      "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "9. Despesas (CRUD)",
-      "metaSortKey": -35
-    },
-    {
-      "_id": "req_desp_list",
-      "_type": "request",
-      "parentId": "fld_despesas",
-      "name": "Listar despesas",
-      "method": "GET",
-      "url": "{{ base_url }}/api/despesas?ordenar=data_despesa&dir=desc",
-      "metaSortKey": -100,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_desp_show",
-      "_type": "request",
-      "parentId": "fld_despesas",
-      "name": "Detalhar despesa",
-      "method": "GET",
-      "url": "{{ base_url }}/api/despesas/1",
-      "metaSortKey": -90,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_desp_create",
-      "_type": "request",
-      "parentId": "fld_despesas",
-      "name": "Criar despesa",
-      "method": "POST",
-      "url": "{{ base_url }}/api/despesas",
-      "metaSortKey": -80,
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_122"
         }
       ],
+      "metaSortKey": 5
+    },
+    {
+      "_id": "fld_1783091927972208_123",
+      "_type": "request_group",
+      "parentId": "wrk_1783091927972208_1",
+      "name": "⑪ Usuários (admin)",
+      "metaSortKey": 11
+    },
+    {
+      "_id": "req_1783091927972208_124",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_123",
+      "name": "GET usuarios",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/usuarios",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_125"
+        }
+      ],
+      "metaSortKey": 1
+    },
+    {
+      "_id": "req_1783091927972208_126",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_123",
+      "name": "GET usuarios/1",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/usuarios/1",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_127"
+        }
+      ],
+      "metaSortKey": 2
+    },
+    {
+      "_id": "req_1783091927972208_128",
+      "_type": "request",
+      "parentId": "fld_1783091927972208_123",
+      "name": "POST usuarios",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/usuarios",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_129"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_130"
+        }
+      ],
+      "metaSortKey": 3,
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"id_caixa\": 1,\n  \"valor\": 200.0,\n  \"tipo_movimentacao\": \"operacional\",\n  \"observacao\": \"Conta de luz\"\n}"
+        "text": "{\n  \"nome_usuario\": \"Novo Operador\",\n  \"email\": \"op@local.com\",\n  \"senha\": \"senha123\",\n  \"tipo_usuario\": \"comum\"\n}"
       }
     },
     {
-      "_id": "req_desp_update",
+      "_id": "req_1783091927972208_131",
       "_type": "request",
-      "parentId": "fld_despesas",
-      "name": "Atualizar despesa",
+      "parentId": "fld_1783091927972208_123",
+      "name": "PUT usuarios/1",
       "method": "PUT",
-      "url": "{{ base_url }}/api/despesas/1",
-      "metaSortKey": -70,
+      "url": "{{ _.base_url }}/api/usuarios/1",
       "headers": [
         {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_132"
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_1783091927972208_133"
         }
       ],
+      "metaSortKey": 4,
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"id_caixa\": 1,\n  \"valor\": 210.0,\n  \"tipo_movimentacao\": \"operacional\"\n}"
+        "text": "{\n  \"nome_usuario\": \"Novo Operador\",\n  \"email\": \"op@local.com\",\n  \"senha\": \"senha123\",\n  \"tipo_usuario\": \"comum\"\n}"
       }
     },
     {
-      "_id": "req_desp_delete",
+      "_id": "req_1783091927972208_134",
       "_type": "request",
-      "parentId": "fld_despesas",
-      "name": "Excluir despesa (admin)",
+      "parentId": "fld_1783091927972208_123",
+      "name": "DELETE usuarios/1",
       "method": "DELETE",
-      "url": "{{ base_url }}/api/despesas/1",
-      "metaSortKey": -60,
+      "url": "{{ _.base_url }}/api/usuarios/1",
       "headers": [
         {
           "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_135"
         }
-      ]
+      ],
+      "metaSortKey": 5
     },
     {
-      "_id": "fld_enderecos",
+      "_id": "fld_1783091927972208_136",
       "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "10. Endereços (CRUD)",
-      "metaSortKey": -30
+      "parentId": "wrk_1783091927972208_1",
+      "name": "⑫ Dashboard",
+      "metaSortKey": 12
     },
     {
-      "_id": "req_end_list",
+      "_id": "req_1783091927972208_137",
       "_type": "request",
-      "parentId": "fld_enderecos",
-      "name": "Listar endereços (filtra por cliente)",
+      "parentId": "fld_1783091927972208_136",
+      "name": "GET dashboard",
       "method": "GET",
-      "url": "{{ base_url }}/api/enderecos?id_cliente=1",
-      "metaSortKey": -100,
+      "url": "{{ _.base_url }}/api/dashboard",
       "headers": [
         {
           "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_end_show",
-      "_type": "request",
-      "parentId": "fld_enderecos",
-      "name": "Detalhar endereço",
-      "method": "GET",
-      "url": "{{ base_url }}/api/enderecos/1",
-      "metaSortKey": -90,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_end_create_cli",
-      "_type": "request",
-      "parentId": "fld_enderecos",
-      "name": "Criar endereço (de cliente)",
-      "method": "POST",
-      "url": "{{ base_url }}/api/enderecos",
-      "metaSortKey": -80,
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "value": "Bearer {{ _.token }}",
+          "id": "pair_1783091927972208_138"
         }
       ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"id_cliente\": 1,\n  \"descricao\": \"Casa\",\n  \"rua\": \"Rua das Acácias\",\n  \"numero\": \"45\",\n  \"bairro\": \"Centro\",\n  \"cep\": \"98700000\"\n}"
-      },
-      "description": "Informe id_cliente OU id_fornecedor (exatamente um). Aqui é de cliente."
-    },
-    {
-      "_id": "req_end_create_forn",
-      "_type": "request",
-      "parentId": "fld_enderecos",
-      "name": "Criar endereço (de fornecedor)",
-      "method": "POST",
-      "url": "{{ base_url }}/api/enderecos",
-      "metaSortKey": -75,
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"id_fornecedor\": 1,\n  \"descricao\": \"Depósito\",\n  \"rua\": \"Av. das Indústrias\",\n  \"numero\": \"2000\",\n  \"bairro\": \"Distrito\",\n  \"cep\": \"98700111\"\n}"
-      }
-    },
-    {
-      "_id": "req_end_update",
-      "_type": "request",
-      "parentId": "fld_enderecos",
-      "name": "Atualizar endereço",
-      "method": "PUT",
-      "url": "{{ base_url }}/api/enderecos/1",
-      "metaSortKey": -70,
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"descricao\": \"Casa (atualizado)\",\n  \"rua\": \"Rua das Acácias\",\n  \"numero\": \"45B\",\n  \"bairro\": \"Centro\",\n  \"cep\": \"98700000\"\n}"
-      }
-    },
-    {
-      "_id": "req_end_delete",
-      "_type": "request",
-      "parentId": "fld_enderecos",
-      "name": "Excluir endereço",
-      "method": "DELETE",
-      "url": "{{ base_url }}/api/enderecos/1",
-      "metaSortKey": -60,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "fld_compras",
-      "_type": "request_group",
-      "parentId": "wrk_estoque_pedidos",
-      "name": "11. Compras (com materiais)",
-      "metaSortKey": -25
-    },
-    {
-      "_id": "req_comp_list",
-      "_type": "request",
-      "parentId": "fld_compras",
-      "name": "Listar compras",
-      "method": "GET",
-      "url": "{{ base_url }}/api/compras?ordenar=data_compra&dir=desc",
-      "metaSortKey": -100,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_comp_show",
-      "_type": "request",
-      "parentId": "fld_compras",
-      "name": "Detalhar compra (com itens)",
-      "method": "GET",
-      "url": "{{ base_url }}/api/compras/1",
-      "metaSortKey": -90,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
-    },
-    {
-      "_id": "req_comp_create",
-      "_type": "request",
-      "parentId": "fld_compras",
-      "name": "Criar compra (admin)",
-      "method": "POST",
-      "url": "{{ base_url }}/api/compras",
-      "metaSortKey": -80,
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"id_fornecedor\": 1,\n  \"data_compra\": \"2026-06-01\",\n  \"itens\": [\n    {\n      \"id_material\": 1,\n      \"quantidade\": 5,\n      \"custo_unitario\": 80.0\n    },\n    {\n      \"id_material\": 2,\n      \"quantidade\": 10,\n      \"custo_unitario\": 32.5\n    }\n  ]\n}"
-      },
-      "description": "Cria a compra e soma a quantidade ao estoque de cada material. id_material precisa existir."
-    },
-    {
-      "_id": "req_comp_delete",
-      "_type": "request",
-      "parentId": "fld_compras",
-      "name": "Excluir compra (admin)",
-      "method": "DELETE",
-      "url": "{{ base_url }}/api/compras/1",
-      "metaSortKey": -60,
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ]
+      "metaSortKey": 1
     }
   ]
 }
