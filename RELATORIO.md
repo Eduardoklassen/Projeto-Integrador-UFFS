@@ -1,11 +1,11 @@
 # Relatório Técnico — Trabalho Integrador
 
-**Sistema de Controle de Estoque e Pedidos — Backend (API REST)**
+**Sistema de Controle de Estoque e Pedidos — Aplicação Web (API REST + Interface)**
 
 Universidade Federal da Fronteira Sul — Ciência da Computação
 GEX613 — Programação II
 Autor: **Eduardo Klassen** — Matrícula 20240017565
-Data: junho de 2026
+Data: julho de 2026
 
 ---
 
@@ -19,10 +19,16 @@ curriculares: Programação II (construção da aplicação), Banco de Dados
 de arquitetura e organização do código, principalmente em PHP em vez do uso de
 JavaScript que foi colocado em aula.
 
-O objetivo foi construir uma API REST funcional que oferecesse operações CRUD
-sobre as entidades do domínio, autenticação e autorização de usuários, e a
-lógica de negócio de uma pequena empresa que adquire materiais, comercializa
-produtos e controla suas movimentações financeiras.
+O objetivo foi construir uma aplicação web completa: uma API REST que oferecesse
+operações CRUD sobre as entidades do domínio, autenticação e autorização de
+usuários e a lógica de negócio de uma pequena empresa que adquire materiais,
+comercializa produtos e controla suas movimentações financeiras; e uma interface
+web que consome essa API, permitindo operar o sistema pelo navegador.
+
+O relatório está organizado em torno das duas frentes. As seções iniciais tratam
+do backend (arquitetura, modelagem e regras de negócio) e as seções finais
+descrevem o front-end (estrutura, consumo da API e responsividade), refletindo a
+ordem em que o trabalho foi construído.
 
 O projeto foi desenvolvido individualmente.
 
@@ -151,6 +157,13 @@ comercial, estoque, composição e financeiro.
   token em rotas protegidas; restrição de operações de cadastro ao perfil
   administrador.
 - **Operações CRUD** sobre todas as entidades principais.
+- **Gestão de usuários:** além do login, o administrador pode listar, criar,
+  editar e remover contas de usuário. Essa funcionalidade recebeu cuidados
+  específicos de segurança e integridade: a senha nunca é retornada pela API
+  (as consultas de listagem selecionam apenas as colunas públicas) e três regras
+  impedem que o sistema fique inoperante — não é possível excluir o último
+  administrador, excluir a própria conta durante a sessão, nem rebaixar o último
+  administrador a usuário comum.
 - **Controle de estoque automático:** ao registrar uma compra, as quantidades
   são somadas ao estoque dos materiais; ao criar um pedido, são subtraídas do
   estoque dos produtos.
@@ -160,11 +173,61 @@ comercial, estoque, composição e financeiro.
   operação e seus itens, além de atualizar o estoque — é feita dentro de uma
   transação de banco de dados. Assim, ou todas as operações são efetivadas, ou
   nenhuma é, garantindo a consistência dos dados em caso de falha.
+- **Tratamento de erros orientado ao usuário:** quando uma exclusão é impedida
+  pela integridade referencial do banco — por exemplo, ao tentar remover um
+  fornecedor que possui compras registradas — a API não devolve um erro genérico
+  de servidor. A violação de chave estrangeira é interceptada e convertida em uma
+  resposta de conflito (`409`) com uma mensagem explicativa, informando o motivo
+  real do bloqueio em vez de expor uma falha técnica.
 - **Dashboard:** endpoint que retorna contagens e um resumo dos dados.
 
 ---
 
-## 7. Desafios encontrados
+## 7. O front-end
+
+Concluída a API, a segunda frente do trabalho foi a interface web que a consome.
+Ela foi construída com **HTML5, CSS3 e JavaScript puro (sem framework)**, pela
+mesma razão que motivou a escolha no backend: exercitar os fundamentos —
+manipulação do DOM, requisições `fetch` e organização do código — sem a
+abstração de uma biblioteca.
+
+**Organização do código.** O front segue a mesma filosofia de separação de
+responsabilidades do backend. O CSS é dividido por componentes (tabela, modal,
+barra lateral, formulário) e por página, seguindo uma convenção de nomenclatura
+consistente (BEM). O JavaScript é modular: cada tela tem seu próprio módulo, e
+funções de uso comum — requisições HTTP, autenticação, montagem do layout,
+componentes de modal — ficam em arquivos reutilizáveis. Todo o estilo e a lógica
+estão em arquivos externos; não há CSS nem JavaScript embutido no HTML.
+
+**Consumo da API.** Um módulo central concentra as chamadas `fetch` à API e
+padroniza o tratamento das respostas. Ele anexa automaticamente o token de
+autenticação ao cabeçalho de cada requisição protegida e interpreta os erros
+devolvidos pelo servidor, traduzindo-os em mensagens claras na interface — por
+exemplo, exibindo o aviso de conflito quando uma exclusão é barrada por vínculo,
+ou redirecionando ao login quando a sessão expira.
+
+**Autenticação no cliente.** Após o login, o token é guardado no navegador e
+reutilizado nas requisições seguintes. Enquanto o token é válido, o usuário é
+levado diretamente ao painel; quando expira, a aplicação o conduz de volta à
+tela de login. As telas internas verificam a presença de sessão antes de
+carregar, evitando o acesso a páginas restritas sem autenticação.
+
+**Visualização, busca e ordenação.** As listagens oferecem busca textual e
+filtros por categoria (por exemplo, produtos ativos ou inativos). Nas telas de
+produtos e pedidos, os cabeçalhos das colunas permitem ordenar os registros —
+clicando, ordena-se de forma crescente; clicando novamente, inverte-se a ordem —
+atendendo ao requisito de ordenação por múltiplos campos.
+
+**Responsividade.** A interface adapta-se a celular, tablet e desktop por meio de
+*media queries*. Em telas menores, a barra lateral de navegação recolhe-se e dá
+lugar a um botão de menu (padrão "hambúrguer") que a exibe como um painel
+deslizante; a barra de ferramentas empilha seus controles; e as tabelas passam a
+rolar horizontalmente, preservando a legibilidade sem quebrar o layout. No
+desktop, o layout original de barra lateral fixa é mantido.
+
+---
+
+## 8. Desafios encontrados
 
 Durante o desenvolvimento houve diversos obstáculos técnicos, que contribuíram
 para o aprendizado:
@@ -198,7 +261,7 @@ correção da modelagem criada em BD1.
 
 ---
 
-## 8. Testes
+## 9. Testes
 
 A API foi testada com a ferramenta **Insomnia**, por meio de uma coleção de
 requisições organizada por módulo. O processo de teste validou o ciclo completo:
@@ -207,9 +270,17 @@ autenticação (obtenção e uso do token), operações CRUD, a lógica de estoq
 registro do histórico de status (verificando que cada mudança gera uma nova
 linha no histórico).
 
+Com o front-end integrado, os testes passaram a ser feitos também pela própria
+interface, percorrendo cada tela e confirmando o resultado diretamente no banco
+de dados (por consultas no phpMyAdmin). Esse cruzamento — operar pela tela e
+conferir o dado gravado — foi o que permitiu identificar e corrigir divergências
+entre o que o código esperava e a estrutura real do banco, como diferenças em
+nomes de tabelas e colunas. A responsividade foi verificada nas ferramentas de
+desenvolvedor do navegador, simulando as dimensões de celular, tablet e desktop.
+
 ---
 
-## 9. Uso de ferramentas de inteligência artificial
+## 10. Uso de ferramentas de inteligência artificial
 
 Em conformidade com a orientação da disciplina, declara-se o uso de uma
 ferramenta de inteligência artificial (assistente Claude, da Anthropic) como
@@ -221,10 +292,18 @@ conduzidos pelo autor.
 - **Geração de código seguindo o padrão estabelecido:** a ferramenta auxiliou na
   escrita dos *models*, *controllers* e *migrations* das novas entidades
   (materiais, compras, receitas, despesas, endereços, caixa e histórico de
-  status), mantendo a coerência com o código existente.
+  status), mantendo a coerência com o código existente. No front-end, apoiou de
+  forma análoga a estruturação dos módulos de tela, do consumo da API e das
+  regras de estilo responsivo.
 - **Revisão e correção:** verificação de sintaxe, ajuste e organização das rotas
   da API e atualização da coleção de testes do Insomnia para refletir as novas
-  entidades.
+  entidades. Durante a integração entre front e back, o apoio foi importante para
+  diagnosticar divergências entre o código e a estrutura real do banco — nomes de
+  tabelas e colunas que não correspondiam — a partir da leitura dos erros
+  retornados, com as correções sempre validadas por testes conduzidos pelo autor.
+- **Implementação do front-end:** apoio na construção da interface que consome a
+  API (telas de CRUD, autenticação no cliente, busca, ordenação e filtros) e na
+  adaptação responsiva para dispositivos móveis, tablets e desktop.
 - **Apoio na modelagem:** discussão das decisões do modelo entidade-relacionamento
   (a ligação direta entre usuário e pedido e o histórico de status), que foram
   posteriormente validadas em consultoria com um profissional de modelagem e
@@ -238,14 +317,24 @@ documentação técnica e à consultoria com especialista.
 
 ---
 
-## 10. Considerações finais
+## 11. Considerações finais
 
-O desenvolvimento do backend permitiu aplicar, de forma integrada, conceitos de
-programação orientada a objetos, modelagem de banco de dados relacional e
-princípios de arquitetura de software. A opção por construir a aplicação sem um
-framework, embora mais trabalhosa, proporcionou compreensão aprofundada de
-mecanismos que normalmente são abstraídos, como roteamento, middleware de
-autenticação e controle transacional.
+O desenvolvimento da aplicação permitiu aplicar, de forma integrada, conceitos de
+programação orientada a objetos, modelagem de banco de dados relacional,
+construção de interfaces web e princípios de arquitetura de software. A opção por
+construir tanto o backend quanto o front-end sem frameworks, embora mais
+trabalhosa, proporcionou compreensão aprofundada de mecanismos que normalmente
+são abstraídos — no servidor, o roteamento, o middleware de autenticação e o
+controle transacional; no cliente, o consumo de uma API por requisições
+assíncronas, o gerenciamento do token de sessão e a adaptação responsiva do
+layout.
+
+A etapa de integração entre as duas frentes foi, em si, uma parte importante do
+aprendizado. Fazer o front e o back conversarem exigiu confrontar o que o código
+presumia com o que o banco de dados realmente continha, e boa parte do esforço
+final concentrou-se em alinhar essas duas visões e em tratar os erros de maneira
+clara para o usuário — um trabalho menos visível que a construção das telas, mas
+essencial para que o sistema funcionasse de forma coesa.
 
 ---
 
