@@ -5,11 +5,11 @@ namespace App\Models;
 use App\Core\Database;
 use PDO;
 
-/**
- * Usuario — agora com CRUD completo (listar/buscar/atualizar/excluir).
- * SEGURANÇA: senha_hash NUNCA é devolvida nas listagens/detalhe —
- * as consultas selecionam só colunas públicas. O hash só é lido
- */
+
+  // Usuario — agora com CRUD completo (listar/buscar/atualizar/excluir).
+  // SEGURANÇA: senha_hash NUNCA é devolvida nas listagens/detalhe —
+  // as consultas selecionam só colunas públicas. O hash só é lido
+ 
 class Usuario
 {
     private PDO $db;
