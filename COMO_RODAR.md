@@ -155,7 +155,7 @@ ter **15 tabelas**: caixa, cliente, compra, compra_material, despesa, endereco,
 fornecedor, historico_status, item_pedido, material, pedido, produto,
 produto_material, receita, usuario.
 
-> Rodar o seed mais de uma vez gera o erro "Duplicate entry 'admin@local'" —
+> Rodar o seed mais de uma vez gera o erro "Duplicate entry 'admin@local.com'" —
 > é normal, significa que o usuário admin já existe. Pode ignorar.
 
 ---
@@ -183,7 +183,7 @@ login; o token só é enviado pelo Insomnia.)
 2. **Import → From File →** selecione `insomnia_collection.json` (na raiz do
    projeto). Isso importa todas as requisições prontas.
 3. **Login:** na pasta "1. Autenticação", abra **Login** (já vem com
-   `admin@local` / `admin123`) e clique em **Send**. A resposta traz um `token`.
+   `admin@local.com` / `admin123`) e clique em **Send**. A resposta traz um `token`.
 4. **Configurar o token:** copie o valor do `token` (texto longo, sem aspas).
    Clique em **Base Environment** (canto superior esquerdo) e cole em
    `"token": ""`, ficando `"token": "<colado_aqui>"`. As rotas protegidas passam
@@ -202,6 +202,7 @@ login; o token só é enviado pelo Insomnia.)
 | 7 | Mudar status → Detalhar pedido | Histórico ganha nova linha (de/para) |
 | 8 | Criar receita / despesa | Movimentação financeira ligada ao caixa |
 | 9 | Dashboard | Contagens e resumo |
+| 10 | Listar / Criar usuário (`/api/usuarios`) | CRUD de usuários, restrito a **admin** |
 
 ---
 
@@ -218,6 +219,7 @@ login; o token só é enviado pelo Insomnia.)
 | Página/JSON em branco | Servidor sem `-t public` | Suba com `php -S localhost:8000 -t public` |
 | `Cannot add foreign key` | Migrations fora de ordem | Siga a ordem do Passo 5 (06 antes da 05) |
 | Porta 8000 ocupada | Outro processo | Use `php -S localhost:8080 -t public` |
+| `429` / "muitas tentativas" no login | Proteção contra força bruta disparou após várias senhas erradas | Aguarde alguns minutos, ou apague os arquivos em `storage/ratelimit/` |
 
 ---
 
