@@ -269,4 +269,4 @@ Definição completa em `routes/api.php`.
 Ciência da Computação, UFFS
 Trabalho Integrador · GEX613 Programação II
 Auxilio de Inteligência artificial - Claude Code em instruçôes e correções precisas
->>>>>>> f0676ab0778c580906ffb5f7d31cb98c64fdecdf
+
