@@ -2,13 +2,14 @@
 
 namespace App\Core;
 
-// Encapsula os dados da requisição HTTP recebida.
+  // Encapsula os dados da requisição HTTP recebida.
+ 
 class Request
 {
     public string $method;
     public string $path;
-    public array $params = [];   // parâmetros de rota (id)
-    public array $query;         // query string
+    public array $params = [];
+    public array $query;
     private ?array $body = null;
 
     public function __construct()
@@ -18,12 +19,14 @@ class Request
         $this->query  = $_GET;
     }
 
-    //Retorna o corpo JSON da requisição como array associativo.
     public function body(): array
     {
         if ($this->body === null) {
             $raw = file_get_contents('php://input');
-            $this->body = json_decode($raw, true) ?? [];
+            $decodificado = json_decode($raw, true);
+            // Se o JSON vier malformado, tratamos como corpo vazio em
+            // vez de deixar um TypeError explodir (robustez + não vaza erro).
+            $this->body = is_array($decodificado) ? $decodificado : [];
         }
         return $this->body;
     }
@@ -47,6 +50,14 @@ class Request
         }
         return null;
     }
-}
 
-?>
+    /**
+     * IP de origem da requisição (para rate limiting).
+     * SEGURANÇA: usamos REMOTE_ADDR, que é o IP real da conexão TCP e
+     * NÃO pode ser forjado pelo cliente.
+     */
+    public function ip(): string
+    {
+        return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    }
+}
