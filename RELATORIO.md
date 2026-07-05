@@ -220,44 +220,71 @@ atendendo ao requisito de ordenação por múltiplos campos.
 
 **Responsividade.** A interface adapta-se a celular, tablet e desktop por meio de
 *media queries*. Em telas menores, a barra lateral de navegação recolhe-se e dá
-lugar a um botão de menu (padrão "hambúrguer") que a exibe como um painel
-deslizante; a barra de ferramentas empilha seus controles; e as tabelas passam a
-rolar horizontalmente, preservando a legibilidade sem quebrar o layout. No
-desktop, o layout original de barra lateral fixa é mantido.
+lugar a um botão de menu que a exibe como um painel deslizante; a barra de
+ferramentas empilha seus controles; e as tabelas passam a rolar horizontalmente,
+preservando a legibilidade sem quebrar o layout. No desktop, o layout original de
+barra lateral fixa é mantido.
 
 ---
 
 ## 8. Desafios encontrados
 
-Durante o desenvolvimento houve diversos obstáculos técnicos, que contribuíram
-para o aprendizado:
+Esta foi a parte mais trabalhosa do projeto e também a que trouxe mais
+aprendizado. Os principais problemas são descritos a seguir.
 
-**Configuração do ambiente PHP.** Ao executar o `composer install`, ocorreu um
-erro relativo à ausência da extensão `zip`. De forma semelhante, a primeira
-tentativa de login falhou por falta da extensão `pdo_mysql`. Ambos os problemas
-foram resolvidos habilitando as respectivas extensões no arquivo `php.ini`,
-o que exigiu compreender como o PHP carrega suas extensões.
+**O ambiente PHP no início.** Antes mesmo de escrever a lógica, houve dificuldade
+na configuração. O `composer install` acusou a falta da extensão `zip`, e a
+primeira tentativa de login falhou por ausência da `pdo_mysql`. Ambos os casos
+foram resolvidos habilitando as extensões no `php.ini`, mas identificar a causa
+levou tempo. Houve ainda um alerta de segurança em uma versão da biblioteca de
+JWT, o que exigiu atualizar a dependência. Foram obstáculos no começo, mas que
+ajudaram a entender melhor como o PHP e o Composer funcionam.
 
-**Vulnerabilidade em dependência.** O Composer bloqueou a instalação da versão
-inicialmente especificada da biblioteca de JWT (`firebase/php-jwt ^6.0`) por
-conta de um alerta de segurança conhecido. A solução foi atualizar para a versão
-`^7.0`, que corrige a vulnerabilidade — uma lição sobre a importância de manter
-dependências atualizadas.
+**O descompasso entre a API e o front-end.** Este foi o desafio central do
+trabalho. O backend foi construído seguindo o cronograma de um curso de PHP, de
+forma relativamente genérica. Ao iniciar o desenvolvimento do front-end e
+conectar as telas à API, ficou claro que as duas partes não se encaixavam tão
+bem quanto o esperado. Em várias telas, a rota necessária não existia, existia
+com outro nome, ou retornava os dados em um formato diferente do que a interface
+esperava.
 
-**Particularidades do terminal.** No PowerShell (terminal padrão do ambiente de
-desenvolvimento), o operador de redirecionamento `<`, comumente usado para
-importar arquivos SQL, não é suportado. Foi necessário adaptar os comandos para
-usar `Get-Content`, e essa observação foi documentada no guia de execução para
-facilitar a avaliação.
+O caso mais evidente foi a tela de **usuários**: o front já estava pronto para
+listar, criar, editar e excluir usuários, mas o backend possuía apenas o registro
+básico, sem as rotas de CRUD. Foi necessário criar o controller e as rotas do
+zero para que a tela funcionasse. Situações semelhantes ocorreram em outras
+telas, e cada uma exigia retornar ao backend, criar ou ajustar o endpoint, e só
+então concluir a integração.
 
-**Ordem de criação das tabelas.** Por conta das chaves estrangeiras, as
-migrations precisaram ser executadas em uma ordem específica — por exemplo, a
-tabela de endereços depende da existência da tabela de fornecedores. A ordem
-correta foi estabelecida e documentada.
+**Divergência de nomes entre código e banco.** Um problema recorrente foi o
+código referenciar tabelas ou colunas com um nome, enquanto o banco usava outro.
+As telas de pedidos e compras, por exemplo, apresentavam o erro de "tabela não
+existe" porque o código buscava `historico_pedido` e `item_compra`, ao passo que
+o banco definia `historico_status` e `compra_material`. Como o banco já estava
+correto e populado, optou-se por ajustar o código para corresponder aos nomes do
+banco, em vez de refazer as tabelas. Identificar essas divergências exigiu testar
+cada tela e conferir os dados diretamente no phpMyAdmin.
 
-**Erros de sintaxe e rotas.** Por falta de prática, muitas incoerências
-ocorreram: verificação de sintaxe, ajuste e organização das rotas da API e
-correção da modelagem criada em BD1.
+**Tratamento de erros e segurança.** À medida que o sistema crescia, surgiram
+falhas ligadas à experiência de uso. Ao tentar excluir um fornecedor com compras
+associadas, por exemplo, o sistema exibia um "erro interno do servidor" genérico,
+sem informação útil ao usuário. Esses casos foram tratados em todos os pontos de
+exclusão, convertendo o erro técnico em uma mensagem clara. Também foi necessário
+reforçar a segurança: proteção do login contra tentativas repetidas, garantia de
+que a senha nunca é retornada pela API e regras para impedir que o sistema fique
+sem administrador. Nenhum desses pontos estava previsto no planejamento inicial;
+foram necessidades percebidas conforme o sistema passou a ser utilizado.
+
+**Ordem das migrations e detalhes do terminal.** Problemas menores, porém
+relevantes: as tabelas precisavam ser criadas em uma ordem específica em razão
+das chaves estrangeiras (a de endereços depende da de fornecedores, por exemplo),
+e o PowerShell não aceitava o operador `<` para importar arquivos SQL, exigindo
+adaptar os comandos. Ambos foram documentados no guia de execução.
+
+O principal aprendizado não foi uma tecnologia específica, mas a compreensão de
+que integrar o front-end e o backend é uma etapa de trabalho em si mesma. O
+código de cada lado pode estar correto isoladamente e ainda assim não funcionar
+em conjunto, e boa parte do esforço final concentrou-se nesse alinhamento, que
+foi subestimado no princípio.
 
 ---
 
