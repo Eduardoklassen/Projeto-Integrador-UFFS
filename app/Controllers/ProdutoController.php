@@ -5,6 +5,7 @@ use App\Core\Request;
 use App\Helpers\Response;
 use App\Helpers\Validator;
 use App\Models\Produto;
+use PDOException;
 
 class ProdutoController
 {
@@ -72,7 +73,16 @@ class ProdutoController
         if (!$this->model->buscar($id)) {
             Response::error('Produto não encontrado', 404);
         }
-        $this->model->excluir($id);
+        try {
+            $this->model->excluir($id);
+        } catch (PDOException $e) {
+            // FK: registro em uso por outra tabela. Mensagem clara (409)
+            // em vez de "erro interno" (500).
+            if ($e->getCode() === '23000') {
+                Response::error('Este produto possui pedidos vinculados e não pode ser excluído.', 409);
+            }
+            throw $e;
+        }
         Response::noContent();
     }
 }
