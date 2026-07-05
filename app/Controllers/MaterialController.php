@@ -8,7 +8,6 @@ use App\Helpers\Validator;
 use App\Models\Material;
 use PDOException;
 
-/** CRUD de materiais (matéria-prima) — mesmo padrão do Produto. */
 class MaterialController
 {
     private Material $model;
