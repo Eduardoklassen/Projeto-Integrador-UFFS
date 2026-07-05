@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Controllers;
+
 use App\Core\Request;
 use App\Helpers\Response;
 use App\Helpers\Validator;
 use App\Models\Fornecedor;
+use PDOException;
 
 class FornecedorController
 {
@@ -14,8 +16,6 @@ class FornecedorController
     {
         $this->model = new Fornecedor();
     }
-
-    // GET /api/fornecedores
     public function index(Request $request): void
     {
         $fornecedores = $this->model->listar([
@@ -26,7 +26,7 @@ class FornecedorController
         Response::success($fornecedores);
     }
 
-    // GET /api/fornecedores (id)
+    // GET /api/fornecedores/{id}
     public function show(Request $request): void
     {
         $fornecedor = $this->model->buscar((int) $request->params['id']);
@@ -55,7 +55,7 @@ class FornecedorController
         Response::created(['id_fornecedor' => $id], "/api/fornecedores/{$id}", 'Fornecedor criado');
     }
 
-    // PUT /api/fornecedores (id)
+    // PUT /api/fornecedores/{id}
     public function update(Request $request): void
     {
         $id = (int) $request->params['id'];
@@ -78,16 +78,23 @@ class FornecedorController
         Response::success(null, 'Fornecedor atualizado');
     }
 
-    // DELETE /api/fornecedores/(id)
+    // DELETE /api/fornecedores/{id}
     public function destroy(Request $request): void
     {
         $id = (int) $request->params['id'];
         if (!$this->model->buscar($id)) {
             Response::error('Fornecedor não encontrado', 404);
         }
-        $this->model->excluir($id);
+        try {
+            $this->model->excluir($id);
+        } catch (PDOException $e) {
+           
+            // para este fornecedor(FK). Antes isto virava um 500 cru
+            if ($e->getCode() === '23000') {
+                Response::error('Este fornecedor possui compras vinculadas e não pode ser excluído.', 409);
+            }
+            throw $e;
+        }
         Response::noContent();
     }
 }
-
-?>
