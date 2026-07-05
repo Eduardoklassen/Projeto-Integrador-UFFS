@@ -1,50 +1,33 @@
 <?php
 
 namespace App\Models;
+
 use App\Core\Database;
 use PDO;
+use RuntimeException;
 
-/**
- * Compra = aquisição de materiais de um fornecedor.
- * Uma compra contém vários materiais (tabela associativa compra_material).
- * Ao criar, usamos TRANSAÇÃO: ou grava a compra + todos os itens, ou nada.
- * Também somamos a quantidade comprada ao estoque de cada material.
- */
+ // A compra representa a entrada de materiais no estoque. 
+ // Ela aumenta o estoque, é processada em uma transação completa e não pode ser atualizada; 
+ // se precisar corrigir, é removida com estorno do estoque e criada novamente.
 class Compra
 {
     private PDO $db;
-
-    private const ORDENAVEIS = ['data_compra', 'valor_total'];
 
     public function __construct()
     {
         $this->db = Database::getConnection();
     }
 
-    public function listar(array $opts = []): array
+    public function listar(): array
     {
-        $sql = 'SELECT c.*, f.nome AS fornecedor_nome
-                FROM compra c
-                JOIN fornecedor f ON f.id_fornecedor = c.id_fornecedor
-                WHERE 1=1';
-        $bind = [];
-
-        if (!empty($opts['busca'])) {
-            $sql .= ' AND f.nome LIKE :busca';
-            $bind['busca'] = '%' . $opts['busca'] . '%';
-        }
-
-        $ordenarPor = in_array($opts['ordenar'] ?? '', self::ORDENAVEIS, true)
-            ? $opts['ordenar'] : 'data_compra';
-        $direcao = strtoupper($opts['dir'] ?? 'DESC') === 'ASC' ? 'ASC' : 'DESC';
-        $sql .= " ORDER BY c.{$ordenarPor} {$direcao}";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($bind);
-        return $stmt->fetchAll();
+        return $this->db->query(
+            'SELECT c.*, f.nome AS fornecedor_nome
+             FROM compra c
+             JOIN fornecedor f ON f.id_fornecedor = c.id_fornecedor
+             ORDER BY c.id_compra DESC'
+        )->fetchAll();
     }
 
-    // Retorna a compra com a lista de materiais itens dela. 
     public function buscar(int $id): ?array
     {
         $stmt = $this->db->prepare(
@@ -59,65 +42,57 @@ class Compra
             return null;
         }
 
-        $itens = $this->db->prepare(
-            'SELECT cm.*, m.nome AS material_nome
-             FROM compra_material cm
-             JOIN material m ON m.id_material = cm.id_material
-             WHERE cm.id_compra = :id'
+        $stmt = $this->db->prepare(
+            'SELECT i.*, m.nome AS material_nome
+             FROM compra_material i
+             JOIN material m ON m.id_material = i.id_material
+             WHERE i.id_compra = :id'
         );
-        $itens->execute(['id' => $id]);
-        $compra['itens'] = $itens->fetchAll();
+        $stmt->execute(['id' => $id]);
+        $compra['itens'] = $stmt->fetchAll();
 
         return $compra;
     }
 
     /**
-     * Cria uma compra com seus itens.
-     * id_fornecedor e itens = ['id_material','quantidade','custo_unitario']
+     * Cria compra + itens e dá ENTRADA no estoque dos materiais.
+     * @param array $itens [{ id_material, quantidade, custo_unitario }]
      */
-    public function criar(array $d): int
+    public function criar(int $idFornecedor, array $itens): int
     {
-        $itens = $d['itens'] ?? [];
-
         $this->db->beginTransaction();
         try {
-            // valor_total é a soma dos sub_totais dos itens
             $total = 0.0;
-            foreach ($itens as $it) {
-                $total += (float) $it['quantidade'] * (float) $it['custo_unitario'];
+            $existe = $this->db->prepare('SELECT nome FROM material WHERE id_material = :id');
+            foreach ($itens as $item) {
+                $existe->execute(['id' => $item['id_material']]);
+                if (!$existe->fetch()) {
+                    throw new RuntimeException("Material #{$item['id_material']} não encontrado.");
+                }
+                $total += $item['quantidade'] * $item['custo_unitario'];
             }
 
             $stmt = $this->db->prepare(
-                'INSERT INTO compra (id_fornecedor, valor_total, data_compra)
-                 VALUES (:forn, :total, :data)'
+                'INSERT INTO compra (id_fornecedor, valor_total) VALUES (:fornecedor, :total)'
             );
-            $stmt->execute([
-                'forn'  => $d['id_fornecedor'],
-                'total' => $total,
-                'data'  => $d['data_compra'] ?? date('Y-m-d'),
-            ]);
+            $stmt->execute(['fornecedor' => $idFornecedor, 'total' => $total]);
             $idCompra = (int) $this->db->lastInsertId();
 
-            $stmtItem = $this->db->prepare(
+            $insItem = $this->db->prepare(
                 'INSERT INTO compra_material (id_compra, id_material, quantidade, custo_unitario)
                  VALUES (:compra, :material, :qtd, :custo)'
             );
-            $stmtEstoque = $this->db->prepare(
-                'UPDATE material SET estoque = estoque + :qtd WHERE id_material = :material'
+            $entrada = $this->db->prepare(
+                'UPDATE material SET estoque = estoque + :qtd WHERE id_material = :id'
             );
-
-            foreach ($itens as $it) {
-                $stmtItem->execute([
+            foreach ($itens as $item) {
+                $insItem->execute([
                     'compra'   => $idCompra,
-                    'material' => $it['id_material'],
-                    'qtd'      => $it['quantidade'],
-                    'custo'    => $it['custo_unitario'],
+                    'material' => $item['id_material'],
+                    'qtd'      => $item['quantidade'],
+                    'custo'    => $item['custo_unitario'],
                 ]);
-                // entrada de material: soma ao estoque
-                $stmtEstoque->execute([
-                    'qtd'      => $it['quantidade'],
-                    'material' => $it['id_material'],
-                ]);
+                $entrada->execute(['qtd' => $item['quantidade'], 'id' => $item['id_material']]);
             }
 
             $this->db->commit();
@@ -128,11 +103,30 @@ class Compra
         }
     }
 
-    public function excluir(int $id): bool
+    /** Exclui estornando a entrada de estoque (simetria com criar). */
+    public function excluir(int $id): void
     {
-        // os itens compra_material saem em cascata pela FK ON DELETE CASCADE
-        $stmt = $this->db->prepare('DELETE FROM compra WHERE id_compra = :id');
-        return $stmt->execute(['id' => $id]);
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare(
+                'SELECT id_material, quantidade FROM compra_material WHERE id_compra = :id'
+            );
+            $stmt->execute(['id' => $id]);
+            $estorno = $this->db->prepare(
+                'UPDATE material SET estoque = estoque - :qtd WHERE id_material = :id'
+            );
+            foreach ($stmt->fetchAll() as $item) {
+                $estorno->execute(['qtd' => $item['quantidade'], 'id' => $item['id_material']]);
+            }
+
+            $del = $this->db->prepare('DELETE FROM compra WHERE id_compra = :id');
+            $del->execute(['id' => $id]);
+
+            $this->db->commit();
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
     }
 
     public function contar(): int
@@ -140,5 +134,3 @@ class Compra
         return (int) $this->db->query('SELECT COUNT(*) FROM compra')->fetchColumn();
     }
 }
-
-?>
