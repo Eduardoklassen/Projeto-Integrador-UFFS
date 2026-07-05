@@ -1,11 +1,14 @@
 <?php
 
 namespace App\Controllers;
+
 use App\Core\Request;
 use App\Helpers\Response;
 use App\Helpers\Validator;
 use App\Models\Caixa;
+use PDOException;
 
+/** CRUD de caixas (contas do financeiro). */
 class CaixaController
 {
     private Caixa $model;
@@ -15,18 +18,11 @@ class CaixaController
         $this->model = new Caixa();
     }
 
-    // GET /api/caixas
     public function index(Request $request): void
     {
-        $caixas = $this->model->listar([
-            'busca'   => $request->query['busca'] ?? null,
-            'ordenar' => $request->query['ordenar'] ?? null,
-            'dir'     => $request->query['dir'] ?? null,
-        ]);
-        Response::success($caixas);
+        Response::success($this->model->listar());
     }
 
-    // GET /api/caixas/(id)
     public function show(Request $request): void
     {
         $caixa = $this->model->buscar((int) $request->params['id']);
@@ -36,13 +32,12 @@ class CaixaController
         Response::success($caixa);
     }
 
-    // POST /api/caixas
     public function store(Request $request): void
     {
         $dados = $request->body();
-
         $v = (new Validator($dados))
-            ->obrigatorio('descricao', 'descrição do caixa');
+            ->obrigatorio('descricao', 'descrição do caixa')
+            ->numericoPositivo('saldo');
 
         if (!$v->passou()) {
             Response::error('Dados inválidos', 422, $v->erros());
@@ -52,27 +47,41 @@ class CaixaController
         Response::created(['id_caixa' => $id], "/api/caixas/{$id}", 'Caixa criado');
     }
 
-    // PUT /api/caixas/(id)
     public function update(Request $request): void
     {
         $id = (int) $request->params['id'];
         if (!$this->model->buscar($id)) {
             Response::error('Caixa não encontrado', 404);
         }
-        $this->model->atualizar($id, $request->body());
+
+        $dados = $request->body();
+        $v = (new Validator($dados))->obrigatorio('descricao', 'descrição do caixa');
+        if (!$v->passou()) {
+            Response::error('Dados inválidos', 422, $v->erros());
+        }
+
+        // Só a descrição é editável — o saldo é consequência dos
+        // lançamentos (integridade contábil).
+        $this->model->atualizar($id, $dados);
         Response::success(null, 'Caixa atualizado');
     }
 
-    // DELETE /api/caixas/(id)
     public function destroy(Request $request): void
     {
         $id = (int) $request->params['id'];
         if (!$this->model->buscar($id)) {
             Response::error('Caixa não encontrado', 404);
         }
-        $this->model->excluir($id);
+
+        try {
+            $this->model->excluir($id);
+        } catch (PDOException $e) {
+            if ($e->getCode() === '23000') {
+                Response::error('Este caixa possui lançamentos e não pode ser excluído.', 409);
+            }
+            throw $e;
+        }
+
         Response::noContent();
     }
 }
-
-?>
